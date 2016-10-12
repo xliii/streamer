@@ -16,6 +16,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		Add(typeof(TwitchCommand));
 		Add(typeof(TwitterCommand));
 		Add(typeof(SoundCloudCommand));
+		Add(typeof(XliiiCommand));
 	}
 
 	private void Add(System.Type t)
