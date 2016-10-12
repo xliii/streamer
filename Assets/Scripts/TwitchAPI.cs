@@ -26,18 +26,15 @@ public class TwitchAPI : MonoBehaviour {
 				var stream = root["stream"];
 				if (stream.Value == "null")
 				{
-					Debug.Log("Stream offline");
 					callback(true, null);
 				} else
 				{
 					var createdAt = stream["created_at"].Value;
-					Debug.Log("Stream launched at " + createdAt);
 					callback(true, createdAt);
 				}
 			},
 			error =>
 			{
-				Debug.LogError("Error while processing !uptime: " + error);
 				callback(false, error);
 			}
 		));
