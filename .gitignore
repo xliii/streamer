@@ -1,0 +1,11 @@
+Library/
+Streamer_Data/
+obj/
+Temp/
+UnityVS.*
+.vs/
+*.csproj
+*.userprefs
+*.sln
+*.user
+*.exe
