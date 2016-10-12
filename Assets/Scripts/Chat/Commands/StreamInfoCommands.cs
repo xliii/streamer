@@ -1,20 +1,22 @@
-﻿public class SetTitleCommand : ChatCommand
+﻿using System;
+
+public class SetTitleCommand : ChatCommand
 {
 	public override string command()
 	{
 		return "!title";
 	}
 
-	public override string process(string user, string[] args)
+	public override void process(string user, string[] args, Action<string> callback)
 	{
 		if (args.Length == 0)
 		{
-			return "Please specify title";
+			callback("Please specify title");
+			return;
 		}
 
 		string title = string.Join(" ", args);
-		TwitchAPI.SetTitle(title);
-		return "Title updated";
+		TwitchAPI.SetTitle(title, callback);
 	}
 
 	public override bool hide()
@@ -35,16 +37,16 @@ public class SetGameCommand : ChatCommand
 		return "!game";
 	}
 
-	public override string process(string user, string[] args)
+	public override void process(string user, string[] args, Action<string> callback)
 	{
 		if (args.Length == 0)
 		{
-			return "Please specify game";
+			callback("Please specify game");
+			return;
 		}
 
 		string game = string.Join(" ", args);
-		TwitchAPI.SetGame(game);
-		return "Game updated";
+		TwitchAPI.SetGame(game, callback);
 	}
 
 	public override bool hide()
@@ -56,4 +58,18 @@ public class SetGameCommand : ChatCommand
 	{
 		return new string[] { User.ROLE_STREAMER };
 	}
+}
+
+public class UptimeCommand : ChatCommand
+{
+	public override string command()
+	{
+		return "!uptime";
+	}
+
+	public override void process(string user, string[] args, Action<string> callback)
+	{
+		TwitchAPI.Uptime(callback);
+	}
+	
 }

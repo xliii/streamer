@@ -1,12 +1,14 @@
-﻿public class MoreRequestsCommand : ChatCommand
+﻿using System;
+
+public class MoreRequestsCommand : ChatCommand
 {
 	public override string command()
 	{
 		return "!more";
 	}
 
-	public override string process(string user, string[] args)
-	{		
-		return "SMOrc WE NEED MORE REQUESTS! SMOrc";
+	public override void process(string user, string[] args, Action<string> callback)
+	{
+		callback("SMOrc WE NEED MORE REQUESTS! SMOrc");
 	}
 }

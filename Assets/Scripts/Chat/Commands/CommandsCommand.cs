@@ -1,6 +1,8 @@
-﻿public class CommandsCommand : ChatCommand {
+﻿using System;
 
-	public override string process(string user, string[] args)
+public class CommandsCommand : ChatCommand {
+
+	public override void process(string user, string[] args, Action<string> callback)
 	{
 		string cmds = "Available commands: ";
 		foreach (ChatCommand cmd in TwitchIRCProcessor.commands)
@@ -8,7 +10,7 @@
 			if (cmd.hide()) continue;
 			cmds += cmd.command() + ", ";
 		}
-		return cmds.Substring(0, cmds.Length - 2);
+		callback(cmds.Substring(0, cmds.Length - 2));
 	}
 
 	public override string command()

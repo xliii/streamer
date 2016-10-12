@@ -1,8 +1,10 @@
-﻿public class PingCommand : ChatCommand {
+﻿using System;
 
-	public override string process(string user, string[] args)
+public class PingCommand : ChatCommand {
+
+	public override void process(string user, string[] args, Action<string> callback)
 	{
-		return "pong";
+		callback("pong");
 	}
 
 	public override string command()

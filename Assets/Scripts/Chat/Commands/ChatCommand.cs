@@ -1,8 +1,9 @@
 ﻿using UnityEngine;
+using System;
 
 public abstract class ChatCommand : ScriptableObject {
 
-	public abstract string process(string user, string[] args);
+	public abstract void process(string user, string[] args, Action<string> callback);
 
 	public abstract string command();
 

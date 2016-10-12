@@ -20,6 +20,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		Add(typeof(XliiiCommand));
 		Add(typeof(SetTitleCommand));
 		Add(typeof(SetGameCommand));
+		Add(typeof(UptimeCommand));
 	}
 
 	private void Add(System.Type t)
@@ -62,12 +63,14 @@ public class TwitchIRCProcessor : MonoBehaviour {
 							}
 						}
 						
-						string response = cmd.process(nick, args);
-						if (!string.IsNullOrEmpty(response))
+						cmd.process(nick, args, response =>
 						{
-							irc.SendMsg(response);
-							return;
-						}
+							if (!string.IsNullOrEmpty(response))
+							{
+								irc.SendMsg(response);
+							}
+						});
+						return;
 					}
 				}
 			} else

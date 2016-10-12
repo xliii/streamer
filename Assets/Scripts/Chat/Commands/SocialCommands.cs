@@ -1,18 +1,20 @@
-﻿public class TwitchCommand : ChatCommand
+﻿using System;
+
+public class TwitchCommand : ChatCommand
 {
 	public override string command()
 	{
 		return "!twitch";
 	}
 
-	public override string process(string user, string[] args)
+	public override void process(string user, string[] args, Action<string> callback)
 	{
-		return "http://www.twitch.tv/xliii Kappa";
+		callback("http://www.twitch.tv/xliii Kappa");
 	}
 
 	public override bool hide()
 	{
-		return true;	
+		return true;
 	}
 }
 
@@ -23,9 +25,9 @@ public class TwitterCommand : ChatCommand
 		return "!twitter";
 	}
 
-	public override string process(string user, string[] args)
+	public override void process(string user, string[] args, Action<string> callback)
 	{
-		return "http://www.twitter.com/followxliii";
+		callback("http://www.twitter.com/followxliii");
 	}
 }
 
@@ -36,8 +38,8 @@ public class SoundCloudCommand : ChatCommand
 		return "!soundcloud";
 	}
 
-	public override string process(string user, string[] args)
+	public override void process(string user, string[] args, Action<string> callback)
 	{
-		return "http://www.soundcloud.com/followxliii";
+		callback("http://www.soundcloud.com/followxliii");
 	}
 }
