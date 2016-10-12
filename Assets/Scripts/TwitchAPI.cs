@@ -17,7 +17,7 @@ public class TwitchAPI : MonoBehaviour {
 		instance = this;
 	}
 
-	public static void Uptime(Action<string> callback)
+	public static void Uptime(Action<bool, string> callback)
 	{
 		instance.StartCoroutine(instance.GetRequest("https://api.twitch.tv/kraken/streams/xliii",
 			success =>
@@ -27,48 +27,48 @@ public class TwitchAPI : MonoBehaviour {
 				if (stream.Value == "null")
 				{
 					Debug.Log("Stream offline");
-					callback("Stream offline");
+					callback(true, null);
 				} else
 				{
-					var createdAt = stream["created_at"];
+					var createdAt = stream["created_at"].Value;
 					Debug.Log("Stream launched at " + createdAt);
-					callback("Stream started at " + createdAt);
+					callback(true, createdAt);
 				}
 			},
 			error =>
 			{
 				Debug.LogError("Error while processing !uptime: " + error);
-				callback("ERROR! Couldn't retrieve uptime :(");
+				callback(false, error);
 			}
 		));
 	}
 
-	public static void SetGame(string game, Action<string> callback)
+	public static void SetGame(string game, Action<bool> callback)
 	{
 		string body = "{\"channel\":{\"game\":\"" + game + "\"}}";
 		instance.StartCoroutine(instance.PutRequest ("https://api.twitch.tv/kraken/channels/xliii", body,
 			success =>
 			{
-				callback("Game updated");
+				callback(true);
 			},
 			error =>
 			{
-				callback("ERROR! Couldn't update game :(");
+				callback(false);
 			}
 			));
 	}
 
-	public static void SetTitle(string title, Action<string> callback)
+	public static void SetTitle(string title, Action<bool> callback)
 	{
 		string body = "{\"channel\":{\"status\":\"" + title + "\"}}";
 		instance.StartCoroutine(instance.PutRequest("https://api.twitch.tv/kraken/channels/xliii", body,
 			success =>
 			{
-				callback("Title updated");
+				callback(true);
 			},
 			error =>
 			{
-				callback("ERROR! Couldn't update title :(");
+				callback(false);
 			}));
 	}
 
@@ -84,10 +84,12 @@ public class TwitchAPI : MonoBehaviour {
 
 			if (www.isError)
 			{
+				Debug.LogError(url + " GET -> " + www.error);
 				onError(www.error);
 			}
 			else
 			{
+				Debug.Log(url + " GET -> " + www.downloadHandler.text);
 				onSuccess(www.downloadHandler.text);
 			}
 		}
@@ -105,10 +107,12 @@ public class TwitchAPI : MonoBehaviour {
 
 			if (www.isError)
 			{
+				Debug.LogError(url + " PUT -> " + www.error);
 				onError(www.error);
 			}
 			else
 			{
+				Debug.Log(url + " PUT -> " + www.downloadHandler.text);
 				onSuccess(www.downloadHandler.text);
 			}
 		}

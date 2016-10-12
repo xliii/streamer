@@ -16,7 +16,16 @@ public class SetTitleCommand : ChatCommand
 		}
 
 		string title = string.Join(" ", args);
-		TwitchAPI.SetTitle(title, callback);
+		TwitchAPI.SetTitle(title, success =>
+		{
+			if (success)
+			{
+				callback("Title updated");
+			} else
+			{
+				callback("ERROR! Title not updated :(");
+			}
+		});
 	}
 
 	public override bool hide()
@@ -46,7 +55,16 @@ public class SetGameCommand : ChatCommand
 		}
 
 		string game = string.Join(" ", args);
-		TwitchAPI.SetGame(game, callback);
+		TwitchAPI.SetGame(game, success =>
+		{
+			if (success)
+			{
+				callback("Game updated");
+			} else
+			{
+				callback("ERROR! Game not updated :(");
+			}
+		});
 	}
 
 	public override bool hide()
@@ -69,7 +87,24 @@ public class UptimeCommand : ChatCommand
 
 	public override void process(string user, string[] args, Action<string> callback)
 	{
-		TwitchAPI.Uptime(callback);
+		TwitchAPI.Uptime((success, response) =>
+		{
+			if (success)
+			{
+				if (response == null)
+				{
+					callback("Stream is currently offline");
+				} else
+				{
+					DateTime time = DateTime.Parse(response);
+					TimeSpan diff = DateTime.Now.Subtract(time);
+					callback(string.Format("Uptime: {0:00}:{1:00}:{2:00}", diff.Hours, diff.Minutes, diff.Seconds));
+				}
+			} else
+			{
+				callback("ERROR! Couldn't retrieve uptime :(");
+			}
+		});
 	}
 	
 }
