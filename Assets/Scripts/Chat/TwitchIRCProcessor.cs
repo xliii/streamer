@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 
 [RequireComponent(typeof(TwitchIRC))]
+[RequireComponent(typeof(TwitchAPI))]
 public class TwitchIRCProcessor : MonoBehaviour {
 
 	TwitchIRC irc;
@@ -17,6 +18,8 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		Add(typeof(TwitterCommand));
 		Add(typeof(SoundCloudCommand));
 		Add(typeof(XliiiCommand));
+		Add(typeof(SetTitleCommand));
+		Add(typeof(SetGameCommand));
 	}
 
 	private void Add(System.Type t)
