@@ -10,4 +10,9 @@ public abstract class ChatCommand : ScriptableObject {
 	{
 		return false;
 	}
+
+	public virtual string[] roles()
+	{
+		return new string[0];
+	}
 }

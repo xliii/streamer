@@ -21,6 +21,11 @@
 	{
 		return true;
 	}
+
+	public override string[] roles()
+	{
+		return new string[] { User.ROLE_STREAMER };
+	}
 }
 
 public class SetGameCommand : ChatCommand
@@ -45,5 +50,10 @@ public class SetGameCommand : ChatCommand
 	public override bool hide()
 	{
 		return true;
+	}
+
+	public override string[] roles()
+	{
+		return new string[] { User.ROLE_STREAMER };
 	}
 }

@@ -33,7 +33,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		irc.messageRecievedEvent.AddListener(msg =>
 		{
 			string[] parts = msg.Split(new char[1] {' '}, 4);
-			string user = parts[0].Substring(1, parts[0].IndexOf("!") - 1);
+			string nick = parts[0].Substring(1, parts[0].IndexOf("!") - 1);
 			string type = parts[1];
 			string message = parts[3].Substring(1);
 			if (type == "PRIVMSG")
@@ -52,10 +52,21 @@ public class TwitchIRCProcessor : MonoBehaviour {
 				{
 					if (command == cmd.command())
 					{
-						string response = cmd.process(user, args);
+						if (cmd.roles().Length > 0)
+						{
+							User user = new User(nick);
+							if (!user.HasAnyRole(cmd.roles()))
+							{
+								irc.SendMsg("You have no rights to execute this command");
+								return;
+							}
+						}
+						
+						string response = cmd.process(nick, args);
 						if (!string.IsNullOrEmpty(response))
 						{
 							irc.SendMsg(response);
+							return;
 						}
 					}
 				}
