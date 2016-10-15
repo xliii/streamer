@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 public class TwitchIRC : MonoBehaviour
 {
-	public string oauth;
-	public string nickName;
-	public string channelName;
+	private string oauth = "oauth:a9rd4rg7jhyj2u7143fy1dxrmjnh88";
+	private string nickName = "xliii_bot";
+	private string channelName = "xliii";
 	private string server = "irc.twitch.tv";
 	private int port = 6667;
 
@@ -82,22 +82,20 @@ public class TwitchIRC : MonoBehaviour
 		{
 			lock (commandQueue)
 			{
-				if (commandQueue.Count > 0) //do we have any commands to send?
-				{
-					// https://github.com/justintv/Twitch-API/blob/master/IRC.md#command--message-limit 
-					//have enough time passed since we last sent a message/command?
-					if (stopWatch.ElapsedMilliseconds > 1750)
-					{
-						//send msg.
-						output.WriteLine(commandQueue.Peek());
-						output.Flush();
-						//remove msg from queue.
-						commandQueue.Dequeue();
-						//restart stopwatch.
-						stopWatch.Reset();
-						stopWatch.Start();
-					}
-				}
+				if (commandQueue.Count <= 0) continue;
+
+				// https://github.com/justintv/Twitch-API/blob/master/IRC.md#command--message-limit 
+				//have enough time passed since we last sent a message/command?
+				if (stopWatch.ElapsedMilliseconds <= 1750) continue;
+
+				//send msg.
+				output.WriteLine(commandQueue.Peek());
+				output.Flush();
+				//remove msg from queue.
+				commandQueue.Dequeue();
+				//restart stopwatch.
+				stopWatch.Reset();
+				stopWatch.Start();
 			}
 		}
 	}
@@ -129,16 +127,10 @@ public class TwitchIRC : MonoBehaviour
 	void OnDisable()
 	{
 		stopThreads = true;
-		//while (inProc.IsAlive || outProc.IsAlive) ;
-		//print("inProc:" + inProc.IsAlive.ToString());
-		//print("outProc:" + outProc.IsAlive.ToString());
 	}
 	void OnDestroy()
 	{
 		stopThreads = true;
-		//while (inProc.IsAlive || outProc.IsAlive) ;
-		//print("inProc:" + inProc.IsAlive.ToString());
-		//print("outProc:" + outProc.IsAlive.ToString());
 	}
 	void Update()
 	{
@@ -146,9 +138,9 @@ public class TwitchIRC : MonoBehaviour
 		{
 			if (recievedMsgs.Count > 0)
 			{
-				for (int i = 0; i < recievedMsgs.Count; i++)
+				foreach (string msg in recievedMsgs)
 				{
-					messageRecievedEvent.Invoke(recievedMsgs[i]);
+					messageRecievedEvent.Invoke(msg);
 				}
 				recievedMsgs.Clear();
 			}
