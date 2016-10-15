@@ -15,7 +15,7 @@ public class TextCycle : MonoBehaviour
 
 	private int customIndex;
 
-	private const string TIMER_REGEX = "\\[\\d\\d:\\d\\d\\]";
+	private const string TIMER_REGEX = "\\[\\d+:?\\d*\\]";
 
 	private double timer; //in seconds
 
@@ -56,7 +56,14 @@ public class TextCycle : MonoBehaviour
 		if (!m.Success) return value;
 
 		TimeSpan span = TimeSpan.FromSeconds(timer);
-		return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}", span.Minutes, span.Seconds));
+		if (span.Hours > 0)
+		{
+			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}:{2}", span.Hours, span.Minutes, span.Seconds));
+		}
+		else
+		{
+			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}", span.Minutes, span.Seconds));
+		}
 	}
 
 	private void SetTimer(string value)
@@ -65,9 +72,19 @@ public class TextCycle : MonoBehaviour
 		Match m = Regex.Match(value, TIMER_REGEX);
 		if (!m.Success) return;
 		
-		string val = m.Value.Substring(1, m.Value.Length - 2);
-		DateTime dateTime = DateTime.ParseExact(val, "mm:ss", System.Globalization.CultureInfo.InvariantCulture);
-		timer = (dateTime - dateTime.Date).TotalSeconds;
+		string val = m.Value.Substring(1, m.Value.Length - 2); //get rid of []
+		int delim = val.IndexOf(":");
+		if (delim > 0)
+		{
+			int minutes = int.Parse(val.Substring(0, delim));
+			int seconds = int.Parse(val.Substring(delim + 1, val.Length - delim - 1));
+			Debug.Log(minutes + ":" + seconds);
+			timer = minutes*60 + seconds;
+		}
+		else
+		{
+			timer = int.Parse(val) * 60; //that's minutes, ok?
+		}
 	}
 		 
 
