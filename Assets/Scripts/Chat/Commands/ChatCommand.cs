@@ -16,4 +16,9 @@ public abstract class ChatCommand : ScriptableObject {
 	{
 		return new string[0];
 	}
+
+	public virtual int cooldown()
+	{
+		return 10;
+	}
 }

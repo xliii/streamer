@@ -9,6 +9,15 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	public static List<ChatCommand> commands = new List<ChatCommand>();
 
+	private Dictionary<string, float> lastUsages = new Dictionary<string, float>();
+
+	private bool onCooldown(ChatCommand command)
+	{
+		if (!lastUsages.ContainsKey(command.command())) return false;
+
+		return Time.time - lastUsages[command.command()] < command.cooldown();
+	}
+
 	void Awake()
 	{
 		Add(typeof(PingCommand));
@@ -26,7 +35,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 	private void Add(System.Type t)
 	{
 		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
-	}
+	}		
 
 	// Use this for initialization
 	void Start () {
@@ -51,27 +60,30 @@ public class TwitchIRCProcessor : MonoBehaviour {
 				}
 				foreach (ChatCommand cmd in commands)
 				{
-					if (command == cmd.command())
+					if (command != cmd.command()) continue;
+
+					if (onCooldown(cmd)) return;
+
+					if (cmd.roles().Length > 0)
 					{
-						if (cmd.roles().Length > 0)
+						User user = new User(nick);
+						if (!user.HasAnyRole(cmd.roles()))
 						{
-							User user = new User(nick);
-							if (!user.HasAnyRole(cmd.roles()))
-							{
-								irc.SendMsg("You have no rights to execute this command");
-								return;
-							}
+							irc.SendMsg("You have no rights to execute this command");
+							return;
 						}
-						
-						cmd.process(nick, args, response =>
-						{
-							if (!string.IsNullOrEmpty(response))
-							{
-								irc.SendMsg(response);
-							}
-						});
-						return;
 					}
+
+					lastUsages[command] = Time.time;
+					cmd.process(nick, args, response =>
+					{
+						if (!string.IsNullOrEmpty(response))
+						{
+							irc.SendMsg(response);
+						}
+					});
+					//Return after processing a single command
+					return;
 				}
 			} else
 			{
