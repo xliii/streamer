@@ -10,22 +10,6 @@ public class TextCycle : MonoBehaviour
 	private List<string> strings = new List<string>();
 	private int current;
 
-	private KeyCode[] letters =
-	{
-		KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
-		KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
-		KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O,
-		KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
-		KeyCode.U, KeyCode.V, KeyCode.W, KeyCode.X, KeyCode.Y,
-		KeyCode.Z,
-	};
-
-	private KeyCode[] digits =
-	{
-		KeyCode.Alpha0, KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
-		KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
-	};
-
 	private int customIndex;
 
 	// Use this for initialization
@@ -93,21 +77,11 @@ public class TextCycle : MonoBehaviour
 			return;
 		}
 
-		foreach (KeyCode key in letters)
+		foreach (KeyCode key in KeyCodeMapper.ALL)
 		{
 			if (Input.GetKeyDown(key))
 			{
-				AppendCustomText(key.ToString());
-				return;
-			}
-		}
-
-		foreach (KeyCode key in digits)
-		{
-			if (Input.GetKeyDown(key))
-			{
-				AppendCustomText(key.ToString().Substring(5));
-				return;
+				AppendCustomText(key.ToChar());
 			}
 		}
 	}

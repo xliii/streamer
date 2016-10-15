@@ -1,8 +1,59 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public static class KeyCodeMapper {
+
+	public static KeyCode[] LETTERS =
+	{
+		KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
+		KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
+		KeyCode.K, KeyCode.L, KeyCode.M, KeyCode.N, KeyCode.O,
+		KeyCode.P, KeyCode.Q, KeyCode.R, KeyCode.S, KeyCode.T,
+		KeyCode.U, KeyCode.V, KeyCode.W, KeyCode.X, KeyCode.Y,
+		KeyCode.Z,
+	};
+
+	public static KeyCode[] DIGITS =
+	{
+		KeyCode.Alpha0, KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
+		KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
+	};
+
+	public static KeyCode[] SPECIAL =
+	{
+		KeyCode.LeftParen, KeyCode.RightParen, KeyCode.LeftBracket, KeyCode.RightBracket
+	};
+
+	public static KeyCode[] ALL = LETTERS.Concat(DIGITS).Concat(SPECIAL).ToArray();
+
+	public static string ToChar(this KeyCode keyCode)
+	{
+		if (LETTERS.Contains(keyCode))
+		{
+			return keyCode.ToString();
+		}
+
+		if (DIGITS.Contains(keyCode))
+		{
+			return keyCode.ToString().Substring(5);
+		}
+
+		switch (keyCode)
+		{
+			case KeyCode.LeftParen:
+				return "(";
+			case KeyCode.RightParen:
+				return ")";
+			case KeyCode.LeftBracket:
+				return "[";
+			case KeyCode.RightBracket:
+				return "]";
+		}
+
+		return "";
+	}
 
 	public static int ToVirtualKey(this KeyCode keyCode)
 	{
@@ -63,7 +114,7 @@ public static class KeyCodeMapper {
 			case KeyCode.F12: return 0x7B;
 			case KeyCode.F13: return 0x7C;
 			case KeyCode.F14: return 0x7D;
-			case KeyCode.F15: return 0x7E;		
+			case KeyCode.F15: return 0x7E;
 
 			//Misc
 			case KeyCode.Return: return 0x0D;
