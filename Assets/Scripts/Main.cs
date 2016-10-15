@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class Main : MonoBehaviour {
@@ -13,21 +14,26 @@ public class Main : MonoBehaviour {
 
 		if (Input.GetKeyDown(KeyCode.F1))
 		{
-			SceneManager.LoadScene("StartingSoon");
+			Load("StartingSoon");
 			return;
 		}
 
 		if (Input.GetKeyDown(KeyCode.F2))
 		{
-			SceneManager.LoadScene("Main");
+			Load("Main");
 			return;
 		}
 
 		if (Input.GetKeyDown(KeyCode.F3))
 		{
-			SceneManager.LoadScene("Notifications");
+			Load("Notifications");
 			return;
 		}
-
 	}
+
+	void Load(string scene)
+	{
+		SceneManager.LoadScene(scene);
+		AlertManager.alertInProgress = false;
+	}	
 }
