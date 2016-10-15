@@ -18,6 +18,7 @@ public class TextCycle : MonoBehaviour
 	private const string TIMER_REGEX = "\\[\\d+:?\\d*\\]";
 
 	private double timer; //in seconds
+	private int initialTimer;
 
 	// Use this for initialization
 	void Start ()
@@ -70,23 +71,32 @@ public class TextCycle : MonoBehaviour
 	{
 		//TODO: Auto trailing zeroes
 		Match m = Regex.Match(value, TIMER_REGEX);
-		if (!m.Success) return;
+		if (!m.Success)
+		{
+			SetTimer(0);
+			return;
+		}
 		
 		string val = m.Value.Substring(1, m.Value.Length - 2); //get rid of []
 		int delim = val.IndexOf(":");
 		if (delim > 0)
 		{
 			int minutes = int.Parse(val.Substring(0, delim));
-			int seconds = int.Parse(val.Substring(delim + 1, val.Length - delim - 1));
-			Debug.Log(minutes + ":" + seconds);
-			timer = minutes*60 + seconds;
+			int seconds = int.Parse(val.Substring(delim + 1, val.Length - delim - 1));			
+			SetTimer(minutes*60 + seconds);
 		}
 		else
 		{
-			timer = int.Parse(val) * 60; //that's minutes, ok?
+			SetTimer(int.Parse(val) * 60); //that's minutes, ok?
 		}
 	}
-		 
+
+	private void SetTimer(int seconds)
+	{
+		if (initialTimer == seconds) return;
+
+		timer = initialTimer = seconds;
+	}
 
 	private void BackspaceCustomText()
 	{
@@ -129,12 +139,6 @@ public class TextCycle : MonoBehaviour
 		if (Input.GetKeyDown(KeyCode.Backspace))
 		{
 			BackspaceCustomText();
-			return;
-		}
-
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			AppendCustomText(" ");
 			return;
 		}
 

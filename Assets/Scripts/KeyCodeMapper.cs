@@ -23,6 +23,9 @@ public static class KeyCodeMapper {
 
 	private static Dictionary<KeyCode, string> SPECIAL = new Dictionary<KeyCode, string>()
 	{
+		{ KeyCode.Space, " " },
+		{ KeyCode.Return, "\n" },
+
 		{ KeyCode.LeftParen, "(" },
 		{ KeyCode.RightParen, ")" },
 		{ KeyCode.LeftBracket, "[" },
