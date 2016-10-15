@@ -16,7 +16,6 @@ public class WindowsVoice : MonoBehaviour {
 		if (theVoice == null)
 		{
 			theVoice = this;
-			DontDestroyOnLoad(gameObject);
 			initSpeech();
 		}
 	}
