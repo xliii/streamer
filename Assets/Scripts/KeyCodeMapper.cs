@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class KeyCodeMapper {
 
-	public static KeyCode[] LETTERS =
+	private static KeyCode[] LETTERS =
 	{
 		KeyCode.A, KeyCode.B, KeyCode.C, KeyCode.D, KeyCode.E,
 		KeyCode.F, KeyCode.G, KeyCode.H, KeyCode.I, KeyCode.J,
@@ -15,18 +15,40 @@ public static class KeyCodeMapper {
 		KeyCode.Z,
 	};
 
-	public static KeyCode[] DIGITS =
+	private static KeyCode[] DIGITS =
 	{
 		KeyCode.Alpha0, KeyCode.Alpha1, KeyCode.Alpha2, KeyCode.Alpha3, KeyCode.Alpha4,
 		KeyCode.Alpha5, KeyCode.Alpha6, KeyCode.Alpha7, KeyCode.Alpha8, KeyCode.Alpha9
 	};
 
-	public static KeyCode[] SPECIAL =
+	private static Dictionary<KeyCode, string> SPECIAL = new Dictionary<KeyCode, string>()
 	{
-		KeyCode.LeftParen, KeyCode.RightParen, KeyCode.LeftBracket, KeyCode.RightBracket
+		{ KeyCode.LeftParen, "(" },
+		{ KeyCode.RightParen, ")" },
+		{ KeyCode.LeftBracket, "[" },
+		{ KeyCode.RightBracket, "]" },
+
+		{ KeyCode.Semicolon, ":" }, //So we don't need to process Shift separately
+		{ KeyCode.Colon, ":" },
+		{ KeyCode.Comma, "," },
+		{ KeyCode.Dollar, "$" },
+		{ KeyCode.Underscore, "_" },
+
+		{ KeyCode.Slash, "/" },
+		{ KeyCode.Backslash, "\\" },
+		{ KeyCode.Question, "?" },
+		{ KeyCode.Exclaim, "!" },
+
+		{ KeyCode.Asterisk, "*" },
+		{ KeyCode.Plus, "+" },
+		{ KeyCode.KeypadPlus, "+" },
+		{ KeyCode.Minus, "-" },
+		{ KeyCode.KeypadMinus, "-" },
+		{ KeyCode.Equals, "=" },
+		{ KeyCode.KeypadEquals, "=" },
 	};
 
-	public static KeyCode[] ALL = LETTERS.Concat(DIGITS).Concat(SPECIAL).ToArray();
+	public static KeyCode[] ALL = LETTERS.Concat(DIGITS).Concat(SPECIAL.Keys.ToArray()).ToArray();
 
 	public static string ToChar(this KeyCode keyCode)
 	{
@@ -40,16 +62,9 @@ public static class KeyCodeMapper {
 			return keyCode.ToString().Substring(5);
 		}
 
-		switch (keyCode)
+		if (SPECIAL.ContainsKey(keyCode))
 		{
-			case KeyCode.LeftParen:
-				return "(";
-			case KeyCode.RightParen:
-				return ")";
-			case KeyCode.LeftBracket:
-				return "[";
-			case KeyCode.RightBracket:
-				return "]";
+			return SPECIAL[keyCode];
 		}
 
 		return "";
