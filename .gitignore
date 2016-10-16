@@ -4,6 +4,7 @@ obj/
 Temp/
 UnityVS.*
 .vs/
+Assets/Resources/config.txt*
 *.csproj
 *.userprefs
 *.sln

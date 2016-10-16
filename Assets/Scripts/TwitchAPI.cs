@@ -6,10 +6,6 @@ using SimpleJSON;
 
 public class TwitchAPI : MonoBehaviour {
 
-	private static string CLIENT_ID = "9r82dk02lbj7cdk5ln8fkxzqnzvt4ic";
-	private static string CLIENT_SECRET = "j8nak4k4mc82n7hyohv8dmpchvvr3dd";
-	private static string ACCESS_TOKEN = "no2q4269jkyhmrhnlnd6ki9md5q602";
-
 	private static TwitchAPI instance;
 
 	void Awake()
@@ -74,8 +70,8 @@ public class TwitchAPI : MonoBehaviour {
 		using (UnityWebRequest www = UnityWebRequest.Get(url))
 		{
 			www.SetRequestHeader("Accept", "application/vnd.twitchtv.v3+json");
-			www.SetRequestHeader("Client-ID", CLIENT_ID);
-			//www.SetRequestHeader("Authorization", "OAuth " + ACCESS_TOKEN);
+			www.SetRequestHeader("Client-ID", Config.Get(Config.API_CLIENT_ID));
+			//www.SetRequestHeader("Authorization", "OAuth " + Config.Get(Config.API_ACCESS_TOKEN));
 			//www.SetRequestHeader("Content-Type", "application/json");
 			yield return www.Send();
 
@@ -97,8 +93,8 @@ public class TwitchAPI : MonoBehaviour {
 		using (UnityWebRequest www = UnityWebRequest.Put(url, body))
 		{
 			www.SetRequestHeader("Accept", "application/vnd.twitchtv.v3+json");
-			www.SetRequestHeader("Client-ID", CLIENT_ID);
-			www.SetRequestHeader("Authorization", "OAuth " + ACCESS_TOKEN);
+			www.SetRequestHeader("Client-ID", Config.Get(Config.API_CLIENT_ID));
+			www.SetRequestHeader("Authorization", "OAuth " + Config.Get(Config.API_ACCESS_TOKEN));
 			www.SetRequestHeader("Content-Type", "application/json");
 			yield return www.Send();
 

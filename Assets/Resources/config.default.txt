@@ -1,0 +1,6 @@
+twitch.irc.nick=nick
+twitch.irc.channel=channel
+twitch.irc.oauth=oauth:1234567890abcdefghijklmnopqrst
+twitch.api.client_id=1234567890abcdefghijklmnopqrstu
+twitch.api.client_secret=1234567890abcdefghijklmnopqrstu
+twitch.api.access_token=1234567890abcdefghijklmnopqrst
