@@ -11,5 +11,7 @@ public class TestOBS : MonoBehaviour {
 		{
 			OBSRemote.SendKey(KeyCode.F14);
 		}
+
+		Debug.Log("Active: " + WindowsAPI.ActiveWindow());
 	}
 }
