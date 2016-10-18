@@ -3,9 +3,9 @@
 public class ActiveWindowListener : MonoBehaviour
 {
 	private WindowsAPI.WindowType activeWindow = WindowsAPI.WindowType.Unknown;
-	
-	public KeyCode unity;
-	public KeyCode visualStudio;
+
+	public KeyCode unity = KeyCode.F6;
+	public KeyCode visualStudio = KeyCode.F7;
 	public KeyCode obs;
 
 	// Update is called once per frame
