@@ -66,6 +66,14 @@ public class ScheduledMessageCommand : ChatCommand
 			callback(ScheduledCommandProcessor.RemoveCommand(args[1]));
 			return;
 		}
+
+		if (args[0] == "clear")
+		{
+			callback(ScheduledCommandProcessor.Clear());
+			return;
+		}
+
+		callback("Unknown argument: " + args[0]);
 	}
 
 	public override string command()

@@ -87,6 +87,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		ScheduledCommandProcessor.Init();
 		irc = GetComponent<TwitchIRC>();
 		irc.messageRecievedEvent.AddListener(msg =>
 		{

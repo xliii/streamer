@@ -4,9 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public static class ScheduledCommandProcessor {
-
-	//TODO: Store scheduled commands between sessions
+public static class ScheduledCommandProcessor
+{
+	private const string PREFS_KEY = "Scheduled_Commands";
+	
 	public class ScheduledCommand
 	{
 		public string name;
@@ -33,7 +34,51 @@ public static class ScheduledCommandProcessor {
 		}
 	}
 
-	public static List<ScheduledCommand> Commands = new List<ScheduledCommand>();
+	public static void Init()
+	{
+		Commands = Load();
+	}
+
+	public static List<ScheduledCommand> Commands;
+
+	private static void Save()
+	{
+		PlayerPrefs.SetString(PREFS_KEY,
+			Commands.Count == 0 ? "" : Commands.Select(c => c.name + ":" + c.cooldown).Aggregate((cur, next) => cur + ";" + next));
+		PlayerPrefs.Save();
+	}
+
+	private static List<ScheduledCommand> Load()
+	{
+		List<ScheduledCommand> list = new List<ScheduledCommand>();
+		string prefs = PlayerPrefs.GetString(PREFS_KEY, "");
+		if (string.IsNullOrEmpty(prefs))
+		{
+			return list;
+		}
+
+		string[] cmds = prefs.Split(';');
+		foreach (var cmd in cmds)
+		{
+			string[] props = cmd.Split(':');
+			if (props.Length != 2)
+			{
+				Debug.LogError("Bad scheduled commands format: " + prefs);
+				return new List<ScheduledCommand>();
+			}
+
+			var name = props[0];
+			int cooldown;
+			if (!int.TryParse(props[1], out cooldown))
+			{
+				Debug.LogError("Found non-integer cooldown: " + prefs);
+				return new List<ScheduledCommand>();
+			}
+
+			list.Add(new ScheduledCommand(name, cooldown));
+		}
+		return list;
+	} 
 
 	public static string AddCommand(string command, int cooldown)
 	{
@@ -54,6 +99,7 @@ public static class ScheduledCommandProcessor {
 			result = "Command added";
 		}
 		Commands.Add(new ScheduledCommand(command, cooldown));
+		Save();
 		return result;
 	}
 
@@ -65,11 +111,26 @@ public static class ScheduledCommandProcessor {
 	public static string RemoveCommand(string command)
 	{
 		int removed = Commands.RemoveAll(c => c.name == Fix(command));
-		return removed == 0 ? "No such command" : "Command removed";
+		if (removed == 0) return "No such command";
+		Save();
+		return "Command removed";
 	}
 
 	private static string Fix(string command)
 	{
 		return command.StartsWith("!") ? command : "!" + command;
+	}
+
+	public static string Clear()
+	{
+		int count = Commands.Count;
+		if (count > 0)
+		{
+			Commands.Clear();
+			Save();
+			return count + " scheduled commands removed";
+		}
+
+		return "No commands scheduled";
 	}
 }
