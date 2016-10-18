@@ -63,18 +63,16 @@ public static class WindowsAPI {
 	private static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
 
 	[DllImport("user32.dll")]
-	static extern IntPtr GetActiveWindow();
-
-	[DllImport("user32.dll")]
 	private static extern IntPtr GetForegroundWindow();
 
 	public static IntPtr UnityHandle
 	{
 		get
 		{
-			var scene = SceneManager.GetActiveScene().name;
-			var processName = string.Format("Unity 5.5.0b1 Personal (64bit) - {0}.unity - streamer - PC, Mac & Linux Standalone <DX11>", scene);
-			return FindWindowByCaption(IntPtr.Zero, processName);
+			var scene = SceneManager.GetActiveScene();
+			var processName = string.Format("Unity 5.5.0b1 Personal (64bit) - {0}.unity - streamer - PC, Mac & Linux Standalone{1} <DX11>", scene.name, scene.isDirty ? "*" : "");
+			var handle = FindWindowByCaption(IntPtr.Zero, processName);
+			return handle;
 		}
 	}
 
