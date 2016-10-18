@@ -100,8 +100,7 @@ Shader "Hidden/EdgeDetect" {
 			uv.y = 1-uv.y;
 		#endif
 				
-		// calc coord for the X pattern
-		// maybe nicer TODO for the future: 'rotated triangles'
+		// calc coord for the X pattern		
 		
 		o.uv[1] = uv + _MainTex_TexelSize.xy * half2(1,1) * _SampleDistance;
 		o.uv[2] = uv + _MainTex_TexelSize.xy * half2(-1,-1) * _SampleDistance;

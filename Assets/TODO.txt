@@ -1,4 +1,4 @@
-TODOs:
+TO DO:
 
 * Cool text effects
 * Game overlays

@@ -288,8 +288,7 @@
 		const int TAPS = 12;
 
 		float4 centerTap = tex2D(_MainTex, i.uv1.xy);
-
-		// TODO: important ? breaks when HR blur is being used
+		
 		//centerTap.a = max(centerTap.a, 0.1f);
 
 		float sampleCount =  centerTap.a;

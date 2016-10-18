@@ -425,9 +425,6 @@ namespace Moments
 		// Should be fast enough for low-res textures but will tank the framerate at higher res
 		GifFrame ToGifFrame(RenderTexture source, Texture2D target)
 		{
-			// TODO: Experiment with Compute Shaders, it may be faster to return data from a ComputeBuffer
-			// than ReadPixels
-
 			RenderTexture.active = source;
 			target.ReadPixels(new Rect(0, 0, source.width, source.height), 0, 0);
 			target.Apply();
