@@ -90,7 +90,6 @@ public static class WindowsAPI {
 		{
 			foreach (string processName in UnityScenes())
 			{
-				Debug.Log(processName);
 				var handle = FindWindowByCaption(IntPtr.Zero, processName);
 				if (handle != IntPtr.Zero)
 				{

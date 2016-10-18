@@ -1,6 +1,6 @@
-﻿using System.Runtime.InteropServices;
-using System;
+﻿using System;
 using UnityEngine;
+
 public class OBSRemote {
 
 	public static void SendKey(KeyCode keyCode)
@@ -12,7 +12,6 @@ public class OBSRemote {
 			return;
 		}
 
-		Debug.Log ("Sending key to OBS: " + keyCode);
 		WindowsAPI.SendKeycode(WindowsAPI.WindowType.OBS, keyCode);
 	}
 }

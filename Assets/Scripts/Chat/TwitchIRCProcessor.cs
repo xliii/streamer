@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
 
 [RequireComponent(typeof(TwitchIRC))]
 [RequireComponent(typeof(TwitchAPI))]
@@ -7,7 +8,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	TwitchIRC irc;
 
-	public static List<ChatCommand> commands = new List<ChatCommand>();
+	public static List<ChatCommand> commands = new List<ChatCommand>();	
 
 	private Dictionary<string, float> lastUsages = new Dictionary<string, float>();
 
@@ -30,6 +31,12 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		Add(typeof(SetTitleCommand));
 		Add(typeof(SetGameCommand));
 		Add(typeof(UptimeCommand));
+		Add(typeof(ScheduledMessageCommand));
+	}
+
+	public static bool HasCommand(string commandName)
+	{
+		return commands.Any(command => command.command() == commandName);
 	}
 
 	private void Add(System.Type t)
