@@ -51,16 +51,20 @@ public class ScheduledMessageCommand : ChatCommand
 				return;
 			}
 
-			ScheduledCommandProcessor.AddCommand(args[1], cooldown);
-			callback("Scheduled command added");
+			callback(ScheduledCommandProcessor.AddCommand(args[1], cooldown));
 			return;
 		}
 
 
 		if (args[0] == "remove")
 		{
-			//remove command
-			callback("!scheduled remove");
+			if (args.Length < 2)
+			{
+				callback("Usage: !scheduled remove COMMAND");
+				return;
+			}
+
+			callback(ScheduledCommandProcessor.RemoveCommand(args[1]));
 			return;
 		}
 	}
