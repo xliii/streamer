@@ -2,6 +2,7 @@
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
 
 public static class WindowsAPI {
 
@@ -56,6 +57,10 @@ public static class WindowsAPI {
 
 	private const UInt32 WM_KEYDOWN = 0x0100;
 
+	private static List<string> unitySceneList;
+
+	private const string UNITY_WINDOW_TEMPLATE = "Unity 5.5.0b1 Personal (64bit) - {0}.unity - streamer - PC, Mac & Linux Standalone{1} <DX11>";
+
 	[DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
 	private static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
 
@@ -65,14 +70,34 @@ public static class WindowsAPI {
 	[DllImport("user32.dll")]
 	private static extern IntPtr GetForegroundWindow();
 
+	private static List<string> UnityScenes()
+	{
+		if (unitySceneList == null)
+		{
+			unitySceneList = new List<string>();
+			foreach (string scene in SceneController.AllScenes())
+			{
+				unitySceneList.Add(string.Format(UNITY_WINDOW_TEMPLATE, scene, "*")); //Edited
+				unitySceneList.Add(string.Format(UNITY_WINDOW_TEMPLATE, scene, ""));
+			}
+		}
+		return unitySceneList;
+	}
+
 	public static IntPtr UnityHandle
 	{
 		get
 		{
-			var scene = SceneManager.GetActiveScene();
-			var processName = string.Format("Unity 5.5.0b1 Personal (64bit) - {0}.unity - streamer - PC, Mac & Linux Standalone{1} <DX11>", scene.name, scene.isDirty ? "*" : "");
-			var handle = FindWindowByCaption(IntPtr.Zero, processName);
-			return handle;
+			foreach (string processName in UnityScenes())
+			{
+				Debug.Log(processName);
+				var handle = FindWindowByCaption(IntPtr.Zero, processName);
+				if (handle != IntPtr.Zero)
+				{
+					return handle;
+				}
+			}
+			return IntPtr.Zero;
 		}
 	}
 
