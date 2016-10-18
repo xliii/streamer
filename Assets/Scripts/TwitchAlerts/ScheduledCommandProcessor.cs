@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -16,20 +17,41 @@ public static class ScheduledCommandProcessor {
 			this.name = name;
 			this.cooldown = cooldown;
 		}
+
+		public override string ToString()
+		{
+			TimeSpan time = TimeSpan.FromSeconds(cooldown);
+			if (time.Hours > 0)
+			{
+				return string.Format("{0} ({1}:{2}:{3})", name, time.Hours, time.Minutes, time.Seconds);
+			}
+			else
+			{
+				return string.Format("{0} ({1}:{2})", name, time.Minutes, time.Seconds);
+			}
+		}
 	}
 
 	public static List<ScheduledCommand> Commands = new List<ScheduledCommand>();
 
 	public static string AddCommand(string command, int cooldown)
 	{
-		//TODO: Override duplicates
 		command = Fix(command);
 		if (!TwitchIRCProcessor.HasCommand(command))
 		{
 			return "No such command";
 		}
 
-		var result = Contains(command) ? "Command replaced" : "Command added";
+		string result;
+		if (Contains(command))
+		{
+			RemoveCommand(command);
+			result = "Command replaced";
+		}
+		else
+		{
+			result = "Command added";
+		}
 		Commands.Add(new ScheduledCommand(command, cooldown));
 		return result;
 	}

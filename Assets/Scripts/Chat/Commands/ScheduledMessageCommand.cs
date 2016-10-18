@@ -24,8 +24,7 @@ public class ScheduledMessageCommand : ChatCommand
 				callback("No commands scheduled");
 				return;
 			}
-			//TODO: Include cooldowns
-			string commands = ScheduledCommandProcessor.Commands.Select(c => c.name).Aggregate((cur, next) => cur + ", " + next);
+			string commands = ScheduledCommandProcessor.Commands.Select(c => c.ToString()).Aggregate((cur, next) => cur + ", " + next);
 			callback("Scheduled commands: " + commands);
 			return;
 		}
