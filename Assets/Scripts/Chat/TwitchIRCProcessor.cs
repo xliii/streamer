@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -34,6 +35,35 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		Add(typeof(ScheduledMessageCommand));
 	}
 
+	void Update()
+	{
+		//Process scheduled messages
+		foreach (var scheduled in ScheduledCommandProcessor.Commands)
+		{
+			if (scheduled.lastUsage == 0)
+			{
+				scheduled.lastUsage = Time.time;
+				continue;
+			}
+
+			if (scheduled.lastUsage + scheduled.cooldown > Time.time) continue;
+
+			scheduled.lastUsage = Time.time;
+			ChatCommand cmd = Get(scheduled.name);
+			if (cmd == null)
+			{
+				Debug.LogError("Scheduled command was null - THIS SHOULD NOT HAPPEN");
+				return;
+			}
+			Process(cmd, Config.IRC_NICK, new string[0]);
+		}
+	}
+
+	private static ChatCommand Get(string commandName)
+	{
+		return commands.Find(command => command.command() == commandName);
+	}
+
 	public static bool HasCommand(string commandName)
 	{
 		return commands.Any(command => command.command() == commandName);
@@ -42,7 +72,18 @@ public class TwitchIRCProcessor : MonoBehaviour {
 	private void Add(System.Type t)
 	{
 		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
-	}		
+	}
+
+	private void Process(ChatCommand command, string nick, string[] args)
+	{
+		command.process(nick, args, response =>
+		{
+			if (!string.IsNullOrEmpty(response))
+			{
+				irc.SendMsg(response);
+			}
+		});
+	}
 
 	// Use this for initialization
 	void Start () {
@@ -57,45 +98,30 @@ public class TwitchIRCProcessor : MonoBehaviour {
 			{
 				string[] split = message.Split(new char[1] {' '}, 2);
 				string command = split[0];
-				string[] args;
-				if (split.Length > 1)
-				{
-					args = split[1].Split(' ');
-				} else
-				{
-					args = new string[0];
-				}
-				foreach (ChatCommand cmd in commands)
-				{
-					if (command != cmd.command()) continue;
+				var args = split.Length > 1 ? split[1].Split(' ') : new string[0];
 
-					if (onCooldown(cmd)) return;
+				ChatCommand cmd = Get(command);
 
-					if (cmd.roles().Length > 0)
+				if (cmd == null) return;
+
+				if (onCooldown(cmd)) return;
+
+				if (cmd.roles().Length > 0)
+				{
+					User user = new User(nick);
+					if (!user.HasAnyRole(cmd.roles()))
 					{
-						User user = new User(nick);
-						if (!user.HasAnyRole(cmd.roles()))
-						{
-							irc.SendMsg("You have no rights to execute this command");
-							return;
-						}
+						irc.SendMsg("You have no rights to execute this command");
+						return;
 					}
-
-					lastUsages[command] = Time.time;
-					cmd.process(nick, args, response =>
-					{
-						if (!string.IsNullOrEmpty(response))
-						{
-							irc.SendMsg(response);
-						}
-					});
-					//Return after processing a single command
-					return;
 				}
-			} else
-			{
-				Debug.LogWarning("Unknown event received: " + msg);
+
+				lastUsages[command] = Time.time;
+				Process(cmd, nick, args);
+				//Return after processing a single command
+				return;
 			}
+			Debug.LogWarning("Unknown event received: " + msg);
 		});
 	}
 }
