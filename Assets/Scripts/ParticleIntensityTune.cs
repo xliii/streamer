@@ -20,12 +20,12 @@ public class ParticleIntensityTune : MonoBehaviour
 	void Update () {
 		if (Input.GetKeyDown(KeyCode.KeypadPlus))
 		{
-			emission.rate = new ParticleSystem.MinMaxCurve(GetRate() + 5);
+			emission.rateOverTime = new ParticleSystem.MinMaxCurve(GetRate() + 5);
 		}
 
 		if (Input.GetKeyDown(KeyCode.KeypadMinus))
 		{
-			emission.rate = new ParticleSystem.MinMaxCurve(GetRate() - 5);
+			emission.rateOverTime = new ParticleSystem.MinMaxCurve(GetRate() - 5);
 		}
 		if (Input.GetKeyDown(KeyCode.KeypadMultiply))
 		{
@@ -43,12 +43,12 @@ public class ParticleIntensityTune : MonoBehaviour
 
 	private float GetRate()
 	{
-		return emission.rate.constantMax;
+		return emission.rateOverTime.constantMax;
 	}
 
 	public void SetRate(float rate)
 	{
-		emission.rate = new ParticleSystem.MinMaxCurve(Mathf.Max(MIN_RATE, rate));
+		emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Max(MIN_RATE, rate));
 	}
 
 	public void Stop(bool clear = false)
