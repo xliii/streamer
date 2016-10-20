@@ -3,16 +3,25 @@ using UnityEngine.SceneManagement;
 using System.Collections.Generic;
 using System.Linq;
 
-public class SceneController : MonoBehaviour {
+public class SceneController : MonoBehaviour
+{
+	public const string BASE = "Base";
+	public const string STARTING_SOON = "StartingSoon";
+	public const string CODING = "Coding";
+	public const string FULLSCREEN = "FullScreen";
+	public const string MUSIC = "Music";
+	public const string SANDBOX = "Sandbox";
+
+	public static string sceneToLoad = STARTING_SOON;
 
 	private static Dictionary<string, KeyCode> scenes = new Dictionary<string, KeyCode>
 	{
-		{ "StartingSoon", KeyCode.F1 },
-		{ "Coding", KeyCode.F2 },
-		{ "FullScreen", KeyCode.F3 },
-		{ "Music", KeyCode.F4 },
-		{ "Base", KeyCode.None },
-		{ "Sandbox", KeyCode.None }
+		{ STARTING_SOON, KeyCode.F1 },
+		{ CODING, KeyCode.F2 },
+		{ FULLSCREEN, KeyCode.F3 },
+		{ MUSIC, KeyCode.F4 },
+		{ BASE, KeyCode.None },
+		{ SANDBOX, KeyCode.None }
 	};
 
 	public static List<string> AllScenes()
@@ -21,7 +30,10 @@ public class SceneController : MonoBehaviour {
 	}
 	
 	void Start () {
-		Load("StartingSoon");
+		if (sceneToLoad != LoadedScene())
+		{
+			Load(sceneToLoad);
+		}
 	}
 
 	void Update()
@@ -43,7 +55,7 @@ public class SceneController : MonoBehaviour {
 		}
 	}
 	
-	void Load (string scene)
+	void Load(string scene)
 	{
 		foreach (var s in scenes)
 		{
@@ -54,5 +66,26 @@ public class SceneController : MonoBehaviour {
 			SceneManager.UnloadSceneAsync(s.Key);
 		}
 		SceneManager.LoadScene(scene, LoadSceneMode.Additive);
-	}	
+	}
+
+	public static bool IsLoaded(string scene)
+	{
+		for (int i = 0; i < SceneManager.sceneCount; i++)
+		{
+			if (SceneManager.GetSceneAt(i).name == scene) return true;			
+		}
+		return false;
+	}
+
+	public static string LoadedScene()
+	{
+		for (int i = 0; i < SceneManager.sceneCount; i++)
+		{
+			Scene scene = SceneManager.GetSceneAt(i);
+			if (scene.name == BASE) continue;
+
+			return scene.name;
+		}
+		return "";
+	}
 }
