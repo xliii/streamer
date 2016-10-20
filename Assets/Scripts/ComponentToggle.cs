@@ -2,12 +2,7 @@
 
 public class ComponentToggle : MonoBehaviour
 {
-	private const int NONE = -1;
-
 	public MonoBehaviour component;
-
-	[Header("-1 if None")]
-	public int mouseButton = NONE;
 	public KeyCode key = KeyCode.None;
 		
 	void Update ()
@@ -16,17 +11,7 @@ public class ComponentToggle : MonoBehaviour
 
 		if (key != KeyCode.None && Input.GetKeyDown(key))
 		{
-			Toggle();
+			component.enabled = !component.enabled;
 		}
-
-		if (mouseButton != NONE && Input.GetMouseButtonDown(mouseButton))
-		{
-			Toggle();
-		}
-	}
-
-	void Toggle()
-	{
-		component.enabled = !component.enabled;
 	}
 }

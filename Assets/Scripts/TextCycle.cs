@@ -10,6 +10,9 @@ public class TextCycle : MonoBehaviour
 
 	public string[] texts;
 
+	public KeyCode forward = KeyCode.Mouse0;
+	public KeyCode back = KeyCode.Mouse1;
+
 	private List<string> strings = new List<string>();
 	private int current;
 
@@ -111,6 +114,20 @@ public class TextCycle : MonoBehaviour
 		strings[i] = "";
 		SetText();
 	}
+
+	private void Inc()
+	{
+		current++;
+	}
+
+	private void Dec()
+	{
+		current--;
+		if (current < 0)
+		{
+			current += strings.Count;
+		}
+	}
 	
 	void Update () {
 
@@ -119,10 +136,16 @@ public class TextCycle : MonoBehaviour
 		{
 			timer -= Time.deltaTime;
 		}
-
-		if (Input.GetMouseButtonDown(0))
+		
+		if (Input.GetKeyDown(forward))
 		{
-			current++;
+			Inc();
+			SetText();
+		}
+
+		if (Input.GetKeyDown(back))
+		{
+			Dec();
 			SetText();
 		}
 
