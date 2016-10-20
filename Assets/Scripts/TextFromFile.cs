@@ -6,9 +6,9 @@ using System.Text;
 
 public class TextFromFile : MonoBehaviour
 {
+	public TwitchAlertsType type;
 	public TextMeshWrapper textWrapper;
 	public string format = "";
-	public TwitchAlertsType type;
 
 	private static string twitchAlertsPath = "D:\\Stream\\TwitchAlerts\\";
 	private static string deepBotPath = "D:\\Software\\Deepbot\\obs\\";
@@ -16,7 +16,7 @@ public class TextFromFile : MonoBehaviour
 
 	public static readonly string DELIMETER = " %DELIMETER% ";
 
-	public int updateFrequency = 1;
+	private int updateFrequency = 1;
 
 	private float lastUpdated;
 	private string lastValue = null;
