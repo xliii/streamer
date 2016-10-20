@@ -18,7 +18,7 @@ public class SceneController : MonoBehaviour {
 	public static List<string> AllScenes()
 	{
 		return scenes.Keys.ToList();
-	} 
+	}
 	
 	void Start () {
 		Load("StartingSoon");
@@ -47,10 +47,11 @@ public class SceneController : MonoBehaviour {
 	{
 		foreach (var s in scenes)
 		{
-			if (SceneManager.GetSceneByName(s.Key).isLoaded)
-			{
-				SceneManager.UnloadSceneAsync(s.Key);
-			}
+			if (s.Value == KeyCode.None) continue;
+
+			if (!SceneManager.GetSceneByName(s.Key).isLoaded) continue;
+
+			SceneManager.UnloadSceneAsync(s.Key);
 		}
 		SceneManager.LoadScene(scene, LoadSceneMode.Additive);
 	}	
