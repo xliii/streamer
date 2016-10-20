@@ -59,7 +59,7 @@ Shader "Hidden/Kino/Glitch/Analog"
         float shake = (nrand(_Time.x, 2) - 0.5) * _HorizontalShake;
 
         // Color drift
-        float drift = sin(jump + _ColorDrift.y) * _ColorDrift.x;
+        float drift = sin(jump) * _ColorDrift.x;
 
         half4 src1 = tex2D(_MainTex, frac(float2(u + jitter + shake, jump)));
         half4 src2 = tex2D(_MainTex, frac(float2(u + jitter + shake + drift, jump)));
