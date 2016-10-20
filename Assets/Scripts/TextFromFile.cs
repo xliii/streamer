@@ -1,15 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Text;
 
 public class TextFromFile : MonoBehaviour
 {
-	public TextMesh text;
 	public TextMeshWrapper textWrapper;
-	public string prepend = "";
-	public string append = "";
-
+	public string format = "";
 	public TwitchAlertsType type;
 
 	private static string twitchAlertsPath = "D:\\Stream\\TwitchAlerts\\";
@@ -23,6 +21,10 @@ public class TextFromFile : MonoBehaviour
 	private float lastUpdated;
 	private string lastValue = null;
 
+	//We need this map in order not to duplicate alerts
+	private static Dictionary<TwitchAlertsType, TextFromFile> broadcasterMap =
+		new Dictionary<TwitchAlertsType, TextFromFile>();
+
 	static string GetFilePath(TwitchAlertsType type)
 	{
 		if (type.IsDeepBot())
@@ -32,6 +34,14 @@ public class TextFromFile : MonoBehaviour
 		else
 		{
 			return twitchAlertsPath + type.ToString().Replace("thirty_", "30") + extension;
+		}
+	}
+
+	void Awake()
+	{
+		if (!broadcasterMap.ContainsKey(type))
+		{
+			broadcasterMap[type] = this;
 		}
 	}
 
@@ -58,20 +68,15 @@ public class TextFromFile : MonoBehaviour
 		string line = ReadFile(GetFilePath(type));
 		if (lastValue != line)
 		{
-			if (text != null)
-			{
-				text.text = PostProcess(line);
-			}
 			if (textWrapper != null)
 			{
-
 				textWrapper.text = PostProcess(line);
 			}
 
 			//Broadcast change
-			if (Messenger.eventTable.ContainsKey(type.ToString()))
+			if (broadcasterMap.ContainsValue(this) && Messenger.eventTable.ContainsKey(type.ToString()))
 			{
-				Messenger.Broadcast(type.ToString(), AlertData.Parse(type, prepend + line + append), lastValue == null);
+				Messenger.Broadcast(type.ToString(), AlertData.Parse(type, Format(line)), lastValue == null);
 			}
 		}
 		lastValue = line;
@@ -133,6 +138,11 @@ public class TextFromFile : MonoBehaviour
 		{
 			return message.Split(new [] { DELIMETER }, StringSplitOptions.None)[0];
 		}
-		return prepend + message + append;
-	}	
+		return Format(message);
+	}
+
+	string Format(string message)
+	{
+		return string.IsNullOrEmpty(format) ? message : string.Format(format, message);
+	}
 }
