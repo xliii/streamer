@@ -62,11 +62,11 @@ public class TextCycle : MonoBehaviour
 		TimeSpan span = TimeSpan.FromSeconds(timer);
 		if (span.Hours > 0)
 		{
-			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}:{2}", span.Hours, span.Minutes, span.Seconds));
+			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}:{2:00}", span.Hours, span.Minutes, span.Seconds));
 		}
 		else
 		{
-			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1}", span.Minutes, span.Seconds));
+			return Regex.Replace(value, TIMER_REGEX, string.Format("{0}:{1:00}", span.Minutes, span.Seconds));
 		}
 	}
 
