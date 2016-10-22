@@ -49,6 +49,7 @@ public class TextCycle : MonoBehaviour
 	private void Inc()
 	{
 		current++;
+		CustomLock();
 	}
 
 	private void Dec()
@@ -57,6 +58,15 @@ public class TextCycle : MonoBehaviour
 		if (current < 0)
 		{
 			current += strings.Count;
+		}
+		CustomLock();
+	}
+
+	private void CustomLock()
+	{
+		if (custom != null)
+		{
+			custom.locked = i != customIndex;
 		}
 	}
 	

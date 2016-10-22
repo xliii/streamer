@@ -7,6 +7,8 @@ public class CustomText : MonoBehaviour
 	[SerializeField]
 	private string text;
 
+	public bool locked;
+
 	private const string TIMER_REGEX = "\\[\\d+:?\\d*\\]";
 
 	private double timer; //in seconds
@@ -23,6 +25,8 @@ public class CustomText : MonoBehaviour
 		{
 			timer -= Time.deltaTime;
 		}
+
+		if (locked) return;
 
 		if (Input.GetKeyDown(KeyCode.Delete))
 		{
@@ -54,13 +58,13 @@ public class CustomText : MonoBehaviour
 
 	private void ClearCustomText()
 	{
-		text = "";		
+		text = "";
 	}
 
 	private void AppendCustomText(string ch)
 	{
 		text += ch;
-		SetTimer(text);		
+		SetTimer(text);
 	}
 
 	private void SetTimer(string value)
