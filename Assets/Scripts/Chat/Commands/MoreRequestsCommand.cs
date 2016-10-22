@@ -7,7 +7,7 @@ public class MoreRequestsCommand : ChatCommand
 		return "!more";
 	}
 
-	public override void process(string user, string[] args, Action<string> callback)
+	public override void process(User user, string[] args, Action<string> callback)
 	{
 		callback("SMOrc WE NEED MORE REQUESTS! SMOrc");
 	}

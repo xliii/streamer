@@ -5,16 +5,33 @@ using UnityEngine;
 
 public class UserManager : MonoBehaviour
 {
+	public static UserManager instance;
+
 	private const int ONLINE_UPDATE_RATE = 60000; //60 seconds
 	System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
+
 	List<User> allUsers = new List<User>();
 	List<User> online = new List<User>();
+	User bot;
+
+	void Awake()
+	{
+		instance = this;
+	}
 
 	void Start()
 	{
+		InitBot();
 		//TODO: retrieve all users
 		UpdateOnlineUsers();
 		stopWatch.Start();
+	}
+
+	private void InitBot()
+	{
+		//TODO: retrieve bot
+		bot = new User("xliii_bot");
+		bot.SetRole(UserRole.Bot);
 	}
 
 	// Update is called once per frame
@@ -58,8 +75,13 @@ public class UserManager : MonoBehaviour
 		return allUsers.Any(user => user.username.ToLower() == username.ToLower());
 	}
 
-	User GetUser(string username)
+	public User GetBot()
 	{
+		return GetUser(Config.IRC_NICK);
+	}
+
+	public User GetUser(string username)
+	{		
 		return allUsers.Find(user => user.username.ToLower() == username.ToLower());
 	}
 

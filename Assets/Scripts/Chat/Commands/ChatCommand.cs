@@ -3,7 +3,7 @@ using System;
 
 public abstract class ChatCommand : ScriptableObject {
 
-	public abstract void process(string user, string[] args, Action<string> callback);
+	public abstract void process(User user, string[] args, Action<string> callback);
 
 	public abstract string command();
 

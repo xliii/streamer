@@ -76,23 +76,23 @@ public class TwitchAPI : MonoBehaviour {
 				var chatters = root["chatters"];
 				foreach (JSONNode mod in chatters["moderators"].AsArray)
 				{
-					dict[mod.ToString()] = UserRole.Mod;
+					dict[mod.ToString().Replace("\"", "")] = UserRole.Mod;
 				}
 				foreach (JSONNode staff in chatters["staff"].AsArray)
 				{
-					dict[staff.ToString()] = UserRole.Staff;
+					dict[staff.ToString().Replace("\"", "")] = UserRole.Staff;
 				}
 				foreach (JSONNode admin in chatters["admins"].AsArray)
 				{
-					dict[admin.ToString()] = UserRole.Admin;
+					dict[admin.ToString().Replace("\"", "")] = UserRole.Admin;
 				}
 				foreach (JSONNode globalMod in chatters["global_mods"].AsArray)
 				{
-					dict[globalMod.ToString()] = UserRole.GlobalMod;
+					dict[globalMod.ToString().Replace("\"", "")] = UserRole.GlobalMod;
 				}
 				foreach (JSONNode viewer in chatters["viewers"].AsArray)
 				{
-					dict[viewer.ToString()] = UserRole.Viewer;
+					dict[viewer.ToString().Replace("\"", "")] = UserRole.Viewer;
 				}
 
 				callback(dict);

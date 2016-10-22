@@ -7,7 +7,7 @@ public class SetTitleCommand : ChatCommand
 		return "!title";
 	}
 
-	public override void process(string user, string[] args, Action<string> callback)
+	public override void process(User user, string[] args, Action<string> callback)
 	{
 		if (args.Length == 0)
 		{
@@ -46,7 +46,7 @@ public class SetGameCommand : ChatCommand
 		return "!game";
 	}
 
-	public override void process(string user, string[] args, Action<string> callback)
+	public override void process(User user, string[] args, Action<string> callback)
 	{
 		if (args.Length == 0)
 		{
@@ -85,7 +85,7 @@ public class UptimeCommand : ChatCommand
 		return "!uptime";
 	}
 
-	public override void process(string user, string[] args, Action<string> callback)
+	public override void process(User user, string[] args, Action<string> callback)
 	{
 		TwitchAPI.Uptime((success, response) =>
 		{

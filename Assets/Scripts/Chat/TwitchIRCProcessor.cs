@@ -55,7 +55,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 				Debug.LogError("Scheduled command was null - THIS SHOULD NOT HAPPEN");
 				return;
 			}
-			Process(cmd, Config.IRC_NICK, new string[0]);
+			Process(cmd, UserManager.instance.GetBot(), new string[0]);
 		}
 	}
 
@@ -74,9 +74,9 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
 	}
 
-	private void Process(ChatCommand command, string nick, string[] args)
+	private void Process(ChatCommand command, User user, string[] args)
 	{
-		command.process(nick, args, response =>
+		command.process(user, args, response =>
 		{
 			if (!string.IsNullOrEmpty(response))
 			{
@@ -92,7 +92,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		irc.messageRecievedEvent.AddListener(msg =>
 		{
 			string[] parts = msg.Split(new char[1] {' '}, 4);
-			string nick = parts[0].Substring(1, parts[0].IndexOf("!") - 1);
+			string username = parts[0].Substring(1, parts[0].IndexOf("!") - 1);
 			string type = parts[1];
 			string message = parts[3].Substring(1);
 			if (type == "PRIVMSG")
@@ -107,18 +107,22 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 				if (onCooldown(cmd)) return;
 
-				if (cmd.roles().Length > 0)
+				User user = UserManager.instance.GetUser(username);
+
+				if (user == null)
 				{
-					User user = new User(nick);
-					if (!user.HasAnyRole(cmd.roles()))
-					{
-						irc.SendMsg("You have no rights to execute this command");
-						return;
-					}
+					Debug.LogError(string.Format("Could not retrieve user {0} - THIS SHOULD NOT HAPPEN", username));
+					return;
 				}
 
+				if (!user.HasAnyRole(cmd.roles()))
+				{
+					irc.SendMsg("You have no rights to execute this command");
+					return;
+				}
+				
 				lastUsages[command] = Time.time;
-				Process(cmd, nick, args);
+				Process(cmd, user, args);
 				//Return after processing a single command
 				return;
 			}

@@ -32,6 +32,8 @@ public class User {
 	
 	public bool HasAnyRole(UserRole[] roles)
 	{
+		if (roles.Length == 0) return true;
+
 		if (this.roles.Count == 0) return false;
 
 		return roles.Any(role => this.roles.Contains(role));
