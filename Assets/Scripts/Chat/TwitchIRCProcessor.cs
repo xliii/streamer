@@ -22,17 +22,16 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	void Awake()
 	{
-		Add(typeof(PingCommand));
-		Add(typeof(CommandsCommand));
-		Add(typeof(MoreRequestsCommand));
-		Add(typeof(TwitchCommand));
-		Add(typeof(TwitterCommand));
-		Add(typeof(SoundCloudCommand));
-		Add(typeof(XliiiCommand));
-		Add(typeof(SetTitleCommand));
-		Add(typeof(SetGameCommand));
-		Add(typeof(UptimeCommand));
-		Add(typeof(ScheduledMessageCommand));
+		RegisterChatCommands();
+	}
+
+	void RegisterChatCommands()
+	{
+		List<Type> types = typeof (ChatCommand).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof (ChatCommand))).ToList();
+		foreach (var type in types)
+		{
+			Add(type);
+		}
 	}
 
 	void Update()
@@ -69,7 +68,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		return commands.Any(command => command.command() == commandName);
 	}
 
-	private void Add(System.Type t)
+	private void Add(Type t)
 	{
 		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
 	}

@@ -42,7 +42,7 @@ public class User {
 	public void AddOnlinePoints()
 	{
 		var toAdd = PointsMultiplier();
-		Debug.Log(string.Format("Adding {0} points to {1}", toAdd, username));
+		//Debug.Log(string.Format("Adding {0} points to {1}", toAdd, username));
 		points += toAdd;
 	}
 
