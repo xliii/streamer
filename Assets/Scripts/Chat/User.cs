@@ -9,7 +9,12 @@ public class User {
 	public HashSet<UserRole> roles = new HashSet<UserRole>();
 	public DateTime lastOnline;
 
-	public float points;
+	private float points;
+
+	public int Points
+	{
+		get { return (int) points; }
+	}
 
 	public User(string name)
 	{
@@ -39,11 +44,22 @@ public class User {
 		return roles.Any(role => this.roles.Contains(role));
 	}
 
+	public void AddPoints(float amount)
+	{
+		points += amount;
+	}
+
+	public bool RemovePoints(float amount)
+	{
+		if (points < amount) return false;
+
+		points -= amount;
+		return true;
+	}
+
 	public void AddOnlinePoints()
 	{
-		var toAdd = PointsMultiplier();
-		//Debug.Log(string.Format("Adding {0} points to {1}", toAdd, username));
-		points += toAdd;
+		AddPoints(PointsMultiplier());
 	}
 
 	public void SetRole(UserRole role)

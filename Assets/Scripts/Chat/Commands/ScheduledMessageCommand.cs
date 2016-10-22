@@ -80,9 +80,4 @@ public class ScheduledMessageCommand : ChatCommand
 	{
 		return "!scheduled";
 	}
-
-	public override int cooldown()
-	{
-		return 0;
-	}
 }

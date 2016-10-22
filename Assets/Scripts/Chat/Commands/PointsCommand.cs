@@ -5,7 +5,7 @@ public class PointsCommand : ChatCommand {
 	{
 		if (args.Length == 0)
 		{
-			callback("You have " + user.points + " points");
+			callback("You have " + user.Points + " points");
 			return;
 		}
 
@@ -17,12 +17,7 @@ public class PointsCommand : ChatCommand {
 			return;
 		}
 
-		callback(target.username + " has " + target.points + " points");
-	}
-
-	public override int cooldown()
-	{
-		return 0;
+		callback(target.username + " has " + target.Points + " points");
 	}
 
 	public override string command()
