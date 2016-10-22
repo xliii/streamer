@@ -9,6 +9,8 @@ public class CustomText : MonoBehaviour
 
 	public bool locked;
 
+	public TextMesh textMesh;
+
 	private const string TIMER_REGEX = "\\[\\d+:?\\d*\\]";
 
 	private double timer; //in seconds
@@ -20,6 +22,11 @@ public class CustomText : MonoBehaviour
 	}
 
 	void Update () {
+		if (textMesh != null)
+		{
+			textMesh.text = Text();
+		}
+
 		//Update timer
 		if (timer > 0)
 		{

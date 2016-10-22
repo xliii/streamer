@@ -15,14 +15,30 @@ public class Interactive : MonoBehaviour
 	{
 		if (uiCamera == null)
 		{
-			uiCamera = GameObject.Find("UI Camera").GetComponent<Camera>();
+			var cam = GameObject.Find("UI Camera");
+			if (cam != null)
+			{
+				uiCamera = cam.GetComponent<Camera>();
+			}
+			if (uiCamera == null)
+			{
+				uiCamera = GameObject.FindObjectOfType<Camera>();
+			}
+		}
+
+		if (uiCamera == null)
+		{
+			Debug.LogError("Couldn't find camera on screen");
+		} else if (!uiCamera.orthographic)
+		{
+			Debug.LogError("Camera should be orthographic");
 		}
 	}
 
 	bool Hits()
-	{		
+	{
 		var mouse = Mouse();
-		mouse.z = transform.position.z;		
+		mouse.z = transform.position.z;
 		return GetComponent<Collider>().bounds.Contains(mouse);
 	}
 	
@@ -62,7 +78,7 @@ public class Interactive : MonoBehaviour
 
 	Vector3 Mouse()
 	{		
-		Vector3 mouse = uiCamera.ScreenToWorldPoint(Input.mousePosition);
+		Vector3 mouse = uiCamera.ScreenToWorldPoint(Input.mousePosition);		
 		mouse.z = 0;
 		return mouse;
 	}
