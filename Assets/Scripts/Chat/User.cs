@@ -6,9 +6,10 @@ using UnityEngine;
 public class User {
 
 	public string username;
-	public HashSet<UserRole> roles = new HashSet<UserRole>();
+	public List<UserRole> roles = new List<UserRole>();
 	public DateTime lastOnline;
 
+	[SerializeField]
 	private float points;
 
 	public int Points
@@ -18,10 +19,10 @@ public class User {
 
 	public User(string name)
 	{
-		username = name;
-		if (name.ToLower() == "xliii")
+		username = name.ToLower();
+		if (username == "xliii")
 		{
-			roles.Add(UserRole.Streamer);
+			AddRole(UserRole.Streamer);
 		}
 	}
 
@@ -35,13 +36,13 @@ public class User {
 		return roles.Max(role => role.pointsMultiplier());
 	}
 	
-	public bool HasAnyRole(UserRole[] roles)
+	public bool HasAnyRole(UserRole[] requiredRoles)
 	{
-		if (roles.Length == 0) return true;
+		if (requiredRoles.Length == 0) return true;
 
-		if (this.roles.Count == 0) return false;
+		if (roles.Count == 0) return false;
 
-		return roles.Any(role => this.roles.Contains(role));
+		return requiredRoles.Any(role => roles.Contains(role));
 	}
 
 	public void AddPoints(float amount)
@@ -62,8 +63,50 @@ public class User {
 		AddPoints(PointsMultiplier());
 	}
 
-	public void SetRole(UserRole role)
+	public void AddRole(UserRole role)
 	{
-		roles.Add(role);
+		if (!HasRole(role))
+		{
+			roles.Add(role);
+		}
+	}
+
+	public static bool operator ==(User a, User b)
+	{
+		if (ReferenceEquals(a, b))
+		{
+			return true;
+		}
+
+		if ((object)a == null || (object)b == null)
+		{
+			return false;
+		}
+
+		return a.username == b.username;
+
+	}
+
+	public static bool operator !=(User a, User b)
+	{
+		return !(a == b);
+	}
+
+	protected bool Equals(User other)
+	{
+		return string.Equals(username, other.username);
+	}
+
+	public override bool Equals(object obj)
+	{
+		if (ReferenceEquals(null, obj)) return false;
+		if (ReferenceEquals(this, obj)) return true;
+		if (obj.GetType() != this.GetType()) return false;
+		return Equals((User) obj);
+	}
+
+	public override int GetHashCode()
+	{
+		return (username != null ? username.GetHashCode() : 0);
 	}
 }

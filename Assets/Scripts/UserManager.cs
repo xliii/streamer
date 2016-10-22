@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public class UserManager : MonoBehaviour
 {
 	public static UserManager instance;
 
-	private const int ONLINE_UPDATE_RATE = 60000; //60 seconds
+	const int ONLINE_UPDATE_RATE = 60000; //60 seconds
 	System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
-	List<User> allUsers = new List<User>();
 	List<User> online = new List<User>();
-	User bot;
 
 	void Awake()
 	{
@@ -21,18 +18,11 @@ public class UserManager : MonoBehaviour
 
 	void Start()
 	{
-		InitBot();
 		//TODO: retrieve all users
 		UpdateOnlineUsers();
 		stopWatch.Start();
 	}
 
-	private void InitBot()
-	{
-		//TODO: retrieve bot
-		bot = new User("xliii_bot");
-		bot.SetRole(UserRole.Bot);
-	}
 
 	// Update is called once per frame
 	void Update ()
@@ -47,42 +37,32 @@ public class UserManager : MonoBehaviour
 		{
 			foreach (string username in users.Keys)
 			{
-				if (!KnownUser(username))
-				{
-					//register
-					//Debug.Log("Register new user: " + username);
-					var newUser = new User(username);
-					newUser.SetRole(users[username]);
-					newUser.lastOnline = DateTime.Now;
-					allUsers.Add(newUser);
-				}
-
-				var user = GetUser(username);
+				var user = UserRepository.GetByUsername(username);
 				if (user == null)
 				{
-					Debug.LogError("Couldn't find user: " + username + " THIS SHOULD NOT HAPPEN");
-					continue;
+					user = Register(username, users[username]);
 				}
 
+				user.lastOnline = DateTime.Now;
 				online.Add(user);
 				user.AddOnlinePoints();
+				UserRepository.Save(user);
 			}
 		});
 	}
 
-	bool KnownUser(string username)
+	private User Register(string username, UserRole role)
 	{
-		return allUsers.Any(user => user.username.ToLower() == username.ToLower());
+		Debug.Log("Register new user: " + username);
+		var user = new User(username);
+		user.AddRole(role);
+		UserRepository.Save(user);
+		return user;
 	}
 
 	public User GetBot()
 	{
-		return GetUser(Config.IRC_NICK);
-	}
-
-	public User GetUser(string username)
-	{		
-		return allUsers.Find(user => user.username.ToLower() == username.ToLower());
+		return UserRepository.GetByUsername(Config.IRC_NICK);
 	}
 
 	void CheckOnline()

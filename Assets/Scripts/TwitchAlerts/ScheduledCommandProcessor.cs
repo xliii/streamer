@@ -39,7 +39,7 @@ public static class ScheduledCommandProcessor
 		Commands = Load();
 	}
 
-	public static List<ScheduledCommand> Commands;
+	public static List<ScheduledCommand> Commands = new List<ScheduledCommand>();
 
 	private static void Save()
 	{

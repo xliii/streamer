@@ -10,7 +10,7 @@ public class GiveCommand : ChatCommand {
 			return;
 		}
 
-		var target = UserManager.instance.GetUser(args[0]);
+		var target = UserRepository.GetByUsername(args[0]);
 		if (target == null)
 		{
 			callback("User \"" + args[0] + "\" does not exist");
@@ -43,6 +43,8 @@ public class GiveCommand : ChatCommand {
 		}
 		
 		target.AddPoints(amount);
+		UserRepository.Save(user);
+		UserRepository.Save(target);
 		callback(string.Format("{0} Gave {1} points to {2}", user.username, amount, target.username));
 	}
 

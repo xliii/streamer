@@ -9,11 +9,17 @@ public class PointsCommand : ChatCommand {
 			return;
 		}
 
-		var target = UserManager.instance.GetUser(args[0]);
+		var target = UserRepository.GetByUsername(args[0]);
 
 		if (target == null)
 		{
 			callback("User \"" + args[0] + "\" does not exist");
+			return;
+		}
+
+		if (target == user)
+		{
+			callback("You have " + user.Points + " points");
 			return;
 		}
 

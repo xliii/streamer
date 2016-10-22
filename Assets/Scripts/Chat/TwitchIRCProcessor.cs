@@ -106,7 +106,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 				if (onCooldown(cmd)) return;
 
-				User user = UserManager.instance.GetUser(username);
+				User user = UserRepository.GetByUsername(username);
 
 				if (user == null)
 				{
