@@ -1,36 +1,51 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
 public class User {
 
-	public const string ROLE_STREAMER = "ROLE_STREAMER";
-	public const string ROLE_MOD = "ROLE_MOD";
+	public string username;
+	public HashSet<UserRole> roles = new HashSet<UserRole>();
+	public DateTime lastOnline;
 
-	public string nick;
-	public List<string> roles;
+	public float points;
 
 	public User(string name)
 	{
-		this.nick = name;
+		username = name;
 		if (name.ToLower() == "xliii")
 		{
-			roles = new List<string>();
-			roles.Add(ROLE_STREAMER);
+			roles.Add(UserRole.Streamer);
 		}
 	}
 
-	public bool HasRole(string role)
+	public bool HasRole(UserRole role)
 	{
-		return roles != null && roles.Contains(role);
+		return roles.Contains(role);
+	}
+
+	float PointsMultiplier()
+	{
+		return roles.Max(role => role.pointsMultiplier());
 	}
 	
-	public bool HasAnyRole(string[] roles)
+	public bool HasAnyRole(UserRole[] roles)
 	{
-		if (this.roles == null || this.roles.Count == 0) return false;
+		if (this.roles.Count == 0) return false;
 
-		foreach (string role in roles)
-		{
-			if (this.roles.Contains(role)) return true;
-		}
-		return false;
-	}	
+		return roles.Any(role => this.roles.Contains(role));
+	}
+
+	public void AddOnlinePoints()
+	{
+		var toAdd = PointsMultiplier();
+		Debug.Log(string.Format("Adding {0} points to {1}", toAdd, username));
+		points += toAdd;
+	}
+
+	public void SetRole(UserRole role)
+	{
+		roles.Add(role);
+	}
 }

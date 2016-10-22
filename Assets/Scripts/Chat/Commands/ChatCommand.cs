@@ -12,9 +12,9 @@ public abstract class ChatCommand : ScriptableObject {
 		return false;
 	}
 
-	public virtual string[] roles()
+	public virtual UserRole[] roles()
 	{
-		return new string[0];
+		return new UserRole[0];
 	}
 
 	public virtual int cooldown()

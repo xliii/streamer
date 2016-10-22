@@ -33,9 +33,9 @@ public class SetTitleCommand : ChatCommand
 		return true;
 	}
 
-	public override string[] roles()
+	public override UserRole[] roles()
 	{
-		return new string[] { User.ROLE_STREAMER };
+		return new UserRole[] { UserRole.Streamer };
 	}
 }
 
@@ -72,9 +72,9 @@ public class SetGameCommand : ChatCommand
 		return true;
 	}
 
-	public override string[] roles()
+	public override UserRole[] roles()
 	{
-		return new string[] { User.ROLE_STREAMER };
+		return new UserRole[] { UserRole.Streamer };
 	}
 }
 

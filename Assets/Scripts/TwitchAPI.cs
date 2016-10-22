@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using UnityEngine.Networking;
 using SimpleJSON;
+using System.Collections.Generic;
 
 public class TwitchAPI : MonoBehaviour {
 
@@ -62,6 +63,43 @@ public class TwitchAPI : MonoBehaviour {
 			error =>
 			{
 				callback(false);
+			}));
+	}
+
+	public static void GetViewers(Action<Dictionary<string, UserRole>> callback)
+	{
+		instance.StartCoroutine(instance.GetRequest("https://tmi.twitch.tv/group/user/xliii/chatters",
+			success =>
+			{
+				Dictionary<string, UserRole> dict = new Dictionary<string, UserRole>();
+				var root = JSON.Parse(success);
+				var chatters = root["chatters"];
+				foreach (JSONNode mod in chatters["moderators"].AsArray)
+				{
+					dict[mod.ToString()] = UserRole.Mod;
+				}
+				foreach (JSONNode staff in chatters["staff"].AsArray)
+				{
+					dict[staff.ToString()] = UserRole.Staff;
+				}
+				foreach (JSONNode admin in chatters["admins"].AsArray)
+				{
+					dict[admin.ToString()] = UserRole.Admin;
+				}
+				foreach (JSONNode globalMod in chatters["global_mods"].AsArray)
+				{
+					dict[globalMod.ToString()] = UserRole.GlobalMod;
+				}
+				foreach (JSONNode viewer in chatters["viewers"].AsArray)
+				{
+					dict[viewer.ToString()] = UserRole.Viewer;
+				}
+
+				callback(dict);
+			},
+			error =>
+			{
+				Debug.LogError(error);
 			}));
 	}
 
