@@ -65,6 +65,8 @@ public class User {
 
 	public void AddRole(UserRole role)
 	{
+		if (role == UserRole.None) return;
+
 		if (!HasRole(role))
 		{
 			roles.Add(role);

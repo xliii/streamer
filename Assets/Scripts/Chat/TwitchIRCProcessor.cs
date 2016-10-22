@@ -90,13 +90,13 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		irc = GetComponent<TwitchIRC>();
 		irc.messageRecievedEvent.AddListener(msg =>
 		{
-			string[] parts = msg.Split(new char[1] {' '}, 4);
+			string[] parts = msg.Split(new char[] {' '}, 4);
 			string username = parts[0].Substring(1, parts[0].IndexOf("!") - 1);
 			string type = parts[1];
 			string message = parts[3].Substring(1);
 			if (type == "PRIVMSG")
 			{
-				string[] split = message.Split(new char[1] {' '}, 2);
+				string[] split = message.Split(new char[] {' '}, 2);
 				string command = split[0];
 				var args = split.Length > 1 ? split[1].Split(' ') : new string[0];
 
@@ -110,8 +110,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 				if (user == null)
 				{
-					Debug.LogError(string.Format("Could not retrieve user {0} - THIS SHOULD NOT HAPPEN", username));
-					return;
+					user = UserManager.instance.Register(username, UserRole.None);
 				}
 
 				if (!user.HasAnyRole(cmd.roles()))

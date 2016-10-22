@@ -6,7 +6,8 @@
 	Staff,
 	Admin,
 	GlobalMod,
-	Viewer
+	Viewer,
+	None
 }
 
 public static class UserRoleExtensions

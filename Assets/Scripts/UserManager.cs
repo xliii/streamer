@@ -18,8 +18,7 @@ public class UserManager : MonoBehaviour
 
 	void Start()
 	{
-		//TODO: retrieve all users
-		UpdateOnlineUsers();
+		UpdateOnlineUsers(true);
 		stopWatch.Start();
 	}
 
@@ -30,7 +29,7 @@ public class UserManager : MonoBehaviour
 		CheckOnline();
 	}
 
-	void UpdateOnlineUsers()
+	void UpdateOnlineUsers(bool initial = false)
 	{
 		online.Clear();
 		TwitchAPI.GetViewers(users =>
@@ -45,15 +44,16 @@ public class UserManager : MonoBehaviour
 
 				user.lastOnline = DateTime.Now;
 				online.Add(user);
+				if (initial) continue;
+
 				user.AddOnlinePoints();
 				UserRepository.Save(user);
 			}
 		});
 	}
 
-	private User Register(string username, UserRole role)
+	public User Register(string username, UserRole role)
 	{
-		Debug.Log("Register new user: " + username);
 		var user = new User(username);
 		user.AddRole(role);
 		UserRepository.Save(user);
