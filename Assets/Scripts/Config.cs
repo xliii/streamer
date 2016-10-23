@@ -3,7 +3,8 @@ using UnityEngine;
 
 public static class Config
 {
-	public const string IRC_NICK = "twitch.irc.nick";
+	public const string STREAMER_NAME = "twitch.streamer";
+	public const string BOT_NAME = "twitch.bot";
 	public const string IRC_CHANNEL = "twitch.irc.channel";
 	public const string IRC_OAUTH = "twitch.irc.oauth";
 	public const string API_CLIENT_ID = "twitch.api.client_id";

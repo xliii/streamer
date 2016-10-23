@@ -32,7 +32,7 @@ public class TwitchIRC : MonoBehaviour
 
 		//Send PASS & NICK.
 		output.WriteLine("PASS " + Config.Get(Config.IRC_OAUTH));
-		output.WriteLine("NICK " + Config.Get(Config.IRC_NICK).ToLower());
+		output.WriteLine("NICK " + Config.Get(Config.BOT_NAME).ToLower());
 		output.Flush();
 
 		//output proc

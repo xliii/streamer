@@ -29,6 +29,7 @@ public class UserManager : MonoBehaviour
 		CheckOnline();
 	}
 
+	//TODO: Don't tie online check to launch time
 	void UpdateOnlineUsers(bool initial = false)
 	{
 		online.Clear();
@@ -62,7 +63,7 @@ public class UserManager : MonoBehaviour
 
 	public User GetBot()
 	{
-		return UserRepository.GetByUsername(Config.IRC_NICK);
+		return UserRepository.GetByUsername(Config.BOT_NAME);
 	}
 
 	void CheckOnline()

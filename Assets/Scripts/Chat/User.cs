@@ -20,7 +20,7 @@ public class User {
 	public User(string name)
 	{
 		username = name.ToLower();
-		if (username == "xliii")
+		if (username == Config.Get(Config.STREAMER_NAME))
 		{
 			AddRole(UserRole.Streamer);
 		}

@@ -1,4 +1,5 @@
-twitch.irc.nick=nick
+twitch.streamer=streamer_name
+twitch.bot=bot_name
 twitch.irc.channel=channel
 twitch.irc.oauth=oauth:1234567890abcdefghijklmnopqrst
 twitch.api.client_id=1234567890abcdefghijklmnopqrstu
