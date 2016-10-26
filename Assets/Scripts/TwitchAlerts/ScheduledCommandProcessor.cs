@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -82,7 +81,7 @@ public static class ScheduledCommandProcessor
 
 	public static string AddCommand(string command, int cooldown)
 	{
-		command = Fix(command);
+		command = ChatCommand.Normalize(command);
 		if (!TwitchIRCProcessor.HasCommand(command))
 		{
 			return "No such command";
@@ -105,21 +104,18 @@ public static class ScheduledCommandProcessor
 
 	private static bool Contains(string command)
 	{
-		return Commands.Any(c => c.name == Fix(command));
+		return Commands.Any(c => c.name == ChatCommand.Normalize(command));
 	}
 
 	public static string RemoveCommand(string command)
 	{
-		int removed = Commands.RemoveAll(c => c.name == Fix(command));
+		int removed = Commands.RemoveAll(c => c.name == ChatCommand.Normalize(command));
 		if (removed == 0) return "No such command";
 		Save();
 		return "Command removed";
 	}
 
-	private static string Fix(string command)
-	{
-		return command.StartsWith("!") ? command : "!" + command;
-	}
+	
 
 	public static string Clear()
 	{

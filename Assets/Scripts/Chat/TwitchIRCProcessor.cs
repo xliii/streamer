@@ -70,6 +70,10 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	private void Add(Type t)
 	{
+		if (t == typeof (CustomCommand))
+		{
+			Debug.Log("Adding custom command");
+		}
 		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
 	}
 
@@ -98,7 +102,7 @@ public class TwitchIRCProcessor : MonoBehaviour {
 			{
 				string[] split = message.Split(new char[] {' '}, 2);
 				string command = split[0];
-				var args = split.Length > 1 ? split[1].Split(' ') : new string[0];
+				var args = split.Length > 1 ? GetArgs(split[1]): new string[0];
 
 				ChatCommand cmd = Get(command);
 
@@ -126,5 +130,11 @@ public class TwitchIRCProcessor : MonoBehaviour {
 			}
 			Debug.LogWarning("Unknown event received: " + msg);
 		});
+	}
+
+	string[] GetArgs(string message)
+	{
+		//TODO: smart split with ""
+		return message.Split(' ');
 	}
 }

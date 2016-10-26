@@ -19,8 +19,8 @@ public class XliiiCommand : ChatCommand
 		return "!xliii";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override Func<string> Default()
 	{
-		callback(responses[random.Next(responses.Length)]);
+		return () => responses[random.Next(responses.Length)];
 	}
 }
