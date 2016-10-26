@@ -58,11 +58,25 @@ public static class WindowsAPI {
 	private const UInt32 WM_KEYDOWN = 0x0100;
 
 	private static List<string> unitySceneList;
+	private static List<string> visualStudioSceneList;
 
 	private const string UNITY_WINDOW_TEMPLATE = "Unity 5.5.0b1 Personal (64bit) - {0}.unity - streamer - PC, Mac & Linux Standalone{1} <DX11>";
 
 	[DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
 	private static extern IntPtr FindWindowByCaption(IntPtr ZeroOnly, string lpWindowName);
+
+	private static IntPtr FindWindowByCaption(List<string> titles)
+	{
+		foreach (string title in titles)
+		{
+			var handle = FindWindowByCaption(IntPtr.Zero, title);
+			if (handle != IntPtr.Zero)
+			{
+				return handle;
+			}
+		}
+		return IntPtr.Zero;
+	}
 
 	[DllImport("user32.dll")]
 	private static extern bool PostMessage(IntPtr hWnd, UInt32 Msg, int wParam, int lParam);
@@ -84,28 +98,27 @@ public static class WindowsAPI {
 		return unitySceneList;
 	}
 
+	private static List<string> VisualStudioScenes()
+	{
+		if (visualStudioSceneList == null)
+		{
+			visualStudioSceneList = new List<string>
+			{
+				"streamer - Microsoft Visual Studio",
+				"streamer (Running) - Microsoft Visual Studio"
+			};
+		}
+		return visualStudioSceneList;
+	}
+
 	public static IntPtr UnityHandle
 	{
-		get
-		{
-			foreach (string processName in UnityScenes())
-			{
-				var handle = FindWindowByCaption(IntPtr.Zero, processName);
-				if (handle != IntPtr.Zero)
-				{
-					return handle;
-				}
-			}
-			return IntPtr.Zero;
-		}
+		get { return FindWindowByCaption(UnityScenes()); }
 	}
 
 	public static IntPtr VisualStudioHandle
 	{
-		get
-		{
-			return FindWindowByCaption(IntPtr.Zero, "streamer - Microsoft Visual Studio");
-		}
+		get { return FindWindowByCaption(VisualStudioScenes()); }
 	}
 
 	public static IntPtr ObsHandle
