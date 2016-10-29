@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Linq;
 
-public class FlagCommand : ChatCommand {
+public class FlagCommand : ChatCommand
+{
+	private Random random = new Random();
 
 	public override string command()
 	{
@@ -45,12 +48,26 @@ public class FlagCommand : ChatCommand {
 			return;
 		}
 
+		if (args.Length > 1 && args[0] == "debug" && user.HasRole(UserRole.Streamer))
+		{
+			var debugPlace = string.Join(" ", args.Skip(1).ToArray());
+			var username = "Debug" + random.Next(1000);
+			AddFlag(username, null, debugPlace, callback);
+			return;
+		}
+
 		string place = string.Join(" ", args);
 		flag = FlagRepository.GetByUsername(user.username);
+		
+		AddFlag(user.username, flag, place, callback);
+	}
+
+	private void AddFlag(string username, Flag flag, string place, Action<string> callback)
+	{
 		bool wasNoFlag = flag == null;
 		if (wasNoFlag)
 		{
-			flag = new Flag(user.username);
+			flag = new Flag(username);
 		}
 
 		TwitchAPI.Geolocate(place, (formatted, lat, lng) =>

@@ -32,7 +32,6 @@ public class TwitchAPI : MonoBehaviour {
 				var geometry = result["geometry"];
 				string formatted = result["formatted_address"];
 				var location = geometry["location"];
-				Debug.Log(formatted + ": " + location);
 				float latitude = float.Parse(location["lat"]);
 				float longitude = float.Parse(location["lng"]);
 				callback(formatted, latitude, longitude);

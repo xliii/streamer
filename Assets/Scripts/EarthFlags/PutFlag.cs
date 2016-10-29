@@ -57,7 +57,7 @@ public class PutFlag : MonoBehaviour
 	void AddFlags()
 	{
 		var all = FlagRepository.GetAll();
-		Debug.Log("Putting " + all.Count + " flags");
+		Debug.Log("Adding " + all.Count + " flags");
 		foreach (Flag flag in all)
 		{
 			Add(flag);
