@@ -50,9 +50,9 @@ public class PutFlag : MonoBehaviour
 		var x = Mathf.Cos(atan) * length;
 		var z = Mathf.Sin(atan) * length;
 
-		var pos = new Vector3(x, y, z) * 20;
+		var pos = transform.rotation * new Vector3(x, y, z) * 20;
 		//TODO: Add visuals
-		flags[flag] = Instantiate(flagPrefab, transform.rotation * pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
+		flags[flag] = Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
 	}
 
 	void Update () {
