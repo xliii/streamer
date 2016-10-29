@@ -73,6 +73,8 @@ public class User {
 		}
 	}
 
+	#region Equals
+
 	public static bool operator ==(User a, User b)
 	{
 		if (ReferenceEquals(a, b))
@@ -111,4 +113,5 @@ public class User {
 	{
 		return (username != null ? username.GetHashCode() : 0);
 	}
+	#endregion
 }

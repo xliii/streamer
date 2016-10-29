@@ -11,6 +11,8 @@ public class SceneController : MonoBehaviour
 	public const string FULLSCREEN = "FullScreen";
 	public const string MUSIC = "Music";
 	public const string SANDBOX = "Sandbox";
+	public const string DEMO = "Demo";
+	public const string EARTH = "Earth";
 
 	public static string sceneToLoad = STARTING_SOON;
 
@@ -21,7 +23,9 @@ public class SceneController : MonoBehaviour
 		{ FULLSCREEN, KeyCode.F3 },
 		{ MUSIC, KeyCode.F4 },
 		{ BASE, KeyCode.None },
-		{ SANDBOX, KeyCode.None }
+		{ SANDBOX, KeyCode.None },
+		{ DEMO, KeyCode.None },
+		{ EARTH, KeyCode.None }
 	};
 
 	public static List<string> AllScenes()

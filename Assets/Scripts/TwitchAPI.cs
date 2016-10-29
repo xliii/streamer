@@ -14,6 +14,36 @@ public class TwitchAPI : MonoBehaviour {
 		instance = this;
 	}
 
+	public static void Geolocate(string place, Action<string, float, float> callback)
+	{
+		instance.StartCoroutine(instance.GetRequest("https://maps.googleapis.com/maps/api/geocode/json?&address=" + place,
+			success =>
+			{
+				var root = JSON.Parse(success);
+				var error = root["error_message"];
+				if (error != null)
+				{
+					Debug.LogError("Could not retrieve geolocation for " + place + " - " + error);
+					return;
+				}
+
+				var results = root["results"].AsArray;
+				var result = results[0];
+				var geometry = result["geometry"];
+				string formatted = result["formatted_address"];
+				var location = geometry["location"];
+				Debug.Log(formatted + ": " + location);
+				float latitude = float.Parse(location["lat"]);
+				float longitude = float.Parse(location["lng"]);
+				callback(formatted, latitude, longitude);
+			},
+			error =>
+			{
+				Debug.LogError("Could not retrieve geolocation for " + place + " - " + error);
+			}
+		));
+	}
+
 	public static void Uptime(Action<bool, string> callback)
 	{
 		instance.StartCoroutine(instance.GetRequest("https://api.twitch.tv/kraken/streams/xliii",
