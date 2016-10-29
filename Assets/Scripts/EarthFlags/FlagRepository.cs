@@ -1,11 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
 public class FlagRepository
 {
-
 	private class FlagUsersWrapper
 	{
 		public List<string> flagUsers;
@@ -31,6 +29,10 @@ public class FlagRepository
 			if (flags.Add(flag))
 			{
 				Messenger.Broadcast(Flag.FLAG_ADDED, flag);
+			}
+			else
+			{
+				Messenger.Broadcast(Flag.FLAG_UPDATED, flag);
 			}
 		}
 
@@ -80,7 +82,10 @@ public class FlagRepository
 
 		if (flags != null)
 		{
-			flags.Remove(flag);
+			if (flags.Remove(flag))
+			{
+				Messenger.Broadcast(Flag.FLAG_REMOVED, flag);
+			}
 		}
 
 		PlayerPrefs.DeleteKey(string.Format(PREFS_FLAG, flag.user));
@@ -122,7 +127,7 @@ public class Flag
 {
 	public const string FLAG_ADDED = "flagAdded";
 	public const string FLAG_REMOVED = "flagRemoved";
-	public const string FLAG_MODIFIED = "flagModified";
+	public const string FLAG_UPDATED = "flagUpdated";
 	public const string FLAGS_CLEARED = "flagsCleared";	
 
 	public string user;
@@ -133,6 +138,11 @@ public class Flag
 	public Flag(string username)
 	{
 		this.user = username;
+	}
+
+	public override string ToString()
+	{
+		return "Flag(" + user + ", " + place + ")";
 	}
 
 	#region Equals

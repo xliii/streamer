@@ -10,9 +10,11 @@ public class PutFlag : MonoBehaviour
 
 	void Start()
 	{
-		Messenger.AddListener<Flag>(Flag.FLAG_ADDED, Put);
+		Messenger.AddListener<Flag>(Flag.FLAG_ADDED, Add);
+		Messenger.AddListener<Flag>(Flag.FLAG_UPDATED, UpdateFlag);
+		Messenger.AddListener<Flag>(Flag.FLAG_REMOVED, RemoveFlag);
 		Messenger.AddListener(Flag.FLAGS_CLEARED, Clear);
-		PutFlags();
+		AddFlags();
 	}
 
 	void Clear()
@@ -22,19 +24,54 @@ public class PutFlag : MonoBehaviour
 			//TODO: Add visuals
 			Destroy(t.gameObject);
 		}
+
+		flags.Clear();
 	}
 
-	void PutFlags()
+	void UpdateFlag(Flag flag)
+	{
+		if (!flags.ContainsKey(flag))
+		{
+			Debug.LogError("Flag not in dictionary: " + flag);
+		}
+
+		Transform t = flags[flag];
+		var pos = getPos(flag);
+		t.position = pos;
+		t.rotation = Quaternion.LookRotation(pos - transform.position);
+	}
+
+	void RemoveFlag(Flag flag)
+	{
+		if (!flags.ContainsKey(flag))
+		{
+			Debug.LogError("Flag not in dictionary: " + flag);
+		}
+
+		Transform t = flags[flag];
+		flags.Remove(flag);
+		//TODO: Add visuals
+		Destroy(t.gameObject);
+	}
+
+	void AddFlags()
 	{
 		var all = FlagRepository.GetAll();
 		Debug.Log("Putting " + all.Count + " flags");
 		foreach (Flag flag in all)
 		{
-			Put(flag);
+			Add(flag);
 		}
 	}
 
-	void Put(Flag flag)
+	void Add(Flag flag)
+	{
+		var pos = getPos(flag);
+		//TODO: Add visuals
+		flags[flag] = Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
+	}
+
+	Vector3 getPos(Flag flag)
 	{
 		var lat = (flag.latitude + 90) / 180;
 		var lng = (flag.longitude + 180) / 360;
@@ -49,10 +86,7 @@ public class PutFlag : MonoBehaviour
 		var length = Mathf.Sqrt(1 - y * y);
 		var x = Mathf.Cos(atan) * length;
 		var z = Mathf.Sin(atan) * length;
-
-		var pos = transform.rotation * new Vector3(x, y, z) * 20;
-		//TODO: Add visuals
-		flags[flag] = Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
+		return transform.rotation * new Vector3(x, y, z) * 20;
 	}
 
 	void Update () {
