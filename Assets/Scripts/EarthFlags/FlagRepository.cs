@@ -28,7 +28,10 @@ public class FlagRepository
 	{
 		if (flags != null)
 		{
-			flags.Add(flag);
+			if (flags.Add(flag))
+			{
+				Messenger.Broadcast(Flag.FLAG_ADDED, flag);
+			}
 		}
 
 		PlayerPrefs.SetString(string.Format(PREFS_FLAG, flag.user), JsonUtility.ToJson(flag));
@@ -36,6 +39,21 @@ public class FlagRepository
 		{
 			PlayerPrefs.SetString(PREFS_FLAG_USERS, JsonUtility.ToJson(new FlagUsersWrapper(FlagUsers.ToList())));
 		}
+	}
+
+	public static int Clear()
+	{
+		var all = GetAll();
+		int count = all.Count;
+		foreach (Flag flag in all)
+		{
+			PlayerPrefs.DeleteKey(string.Format(PREFS_FLAG, flag.user));
+		}
+		PlayerPrefs.DeleteKey(PREFS_FLAG_USERS);
+		Messenger.Broadcast(Flag.FLAGS_CLEARED);
+		all.Clear();
+		flagUsers.Clear();
+		return count;
 	}
 
 	private static HashSet<string> FlagUsers
@@ -102,6 +120,11 @@ public class FlagRepository
 
 public class Flag
 {
+	public const string FLAG_ADDED = "flagAdded";
+	public const string FLAG_REMOVED = "flagRemoved";
+	public const string FLAG_MODIFIED = "flagModified";
+	public const string FLAGS_CLEARED = "flagsCleared";	
+
 	public string user;
 	public string place;
 	public float latitude;

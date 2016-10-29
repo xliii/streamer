@@ -6,15 +6,28 @@ public class PutFlag : MonoBehaviour
 {
 	public GameObject flagPrefab;
 
+	private Dictionary<Flag, Transform> flags = new Dictionary<Flag, Transform>();
+
 	void Start()
 	{
+		Messenger.AddListener<Flag>(Flag.FLAG_ADDED, Put);
+		Messenger.AddListener(Flag.FLAGS_CLEARED, Clear);
 		PutFlags();
+	}
+
+	void Clear()
+	{
+		foreach (Transform t in flags.Values)
+		{
+			//TODO: Add visuals
+			Destroy(t.gameObject);
+		}
 	}
 
 	void PutFlags()
 	{
 		var all = FlagRepository.GetAll();
-		Debug.Log("Putting " + all.Count + "flags");
+		Debug.Log("Putting " + all.Count + " flags");
 		foreach (Flag flag in all)
 		{
 			Put(flag);
@@ -38,7 +51,8 @@ public class PutFlag : MonoBehaviour
 		var z = Mathf.Sin(atan) * length;
 
 		var pos = new Vector3(x, y, z) * 20;
-		Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform);		
+		//TODO: Add visuals
+		flags[flag] = Instantiate(flagPrefab, transform.rotation * pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
 	}
 
 	void Update () {

@@ -31,6 +31,13 @@ public class FlagCommand : ChatCommand {
 			return;
 		}
 
+		if (args[0] == "clear")
+		{
+			int deleted = FlagRepository.Clear();
+			callback(deleted == 0 ? "There were no flags" : deleted == 1 ? "1 flag deleted" : deleted + " flags deleted");
+			return;
+		}
+
 		if (args[0] == "count")
 		{
 			var count = FlagRepository.GetAll().Count;
