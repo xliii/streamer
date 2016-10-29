@@ -6,45 +6,70 @@ public class PutFlag : MonoBehaviour
 {
 	public GameObject flagPrefab;
 
-	public float latitude;
-	public float longitude;
-	public float distance = 20;
+	void Start()
+	{
+		PutFlags();
+	}
 
-	public Camera front;
-	public Camera back;
-	
-	// Update is called once per frame
-	void Update () {
-		if (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
+	void PutFlags()
+	{
+		var all = FlagRepository.GetAll();
+		Debug.Log("Putting " + all.Count + "flags");
+		foreach (Flag flag in all)
 		{
-			//add flag
-			Camera cam = Input.GetMouseButtonDown(0) ? front : back;
-			Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-
-			RaycastHit hit;
-			if (Physics.Raycast(ray, out hit))
-			{
-				Quaternion rotation = Quaternion.identity;
-				rotation = Quaternion.LookRotation(hit.normal);
-				GameObject flag = Instantiate(flagPrefab, hit.point, rotation);
-				flag.transform.SetParent(transform);
-				var one = hit.point/distance;
-				//Debug.Log(one);
-				var u = 1f + Mathf.Atan2(one.z, one.x)/(2*Mathf.PI);
-				if (u > 1)
-				{
-					u -= 1;
-				}
-				var v = 0.5f + Mathf.Asin(one.y)/Mathf.PI;
-				//Debug.Log(u + " : " + v);
-			}
+			Put(flag);
 		}
-		/*if (Input.GetMouseButtonDown(1))
+	}
+
+	void Put(Flag flag)
+	{
+		var lat = (flag.latitude + 90) / 180;
+		var lng = (flag.longitude + 180) / 360;
+		var u = lng + 0.5f;
+		if (u > 1)
 		{
-			var pos = Quaternion.AngleAxis(longitude, -Vector3.up) * Quaternion.AngleAxis(latitude, -Vector3.right) * new Vector3(0, 0, distance);
-			var cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
-			cube.transform.SetParent(transform);
-			cube.transform.position = pos;
-		}*/
+			u -= 1;
+		}
+		var atan = (u - 1) * 2 * Mathf.PI;
+		var asin = (lat - 0.5f) * Mathf.PI;
+		var y = Mathf.Sin(asin);
+		var length = Mathf.Sqrt(1 - y * y);
+		var x = Mathf.Cos(atan) * length;
+		var z = Mathf.Sin(atan) * length;
+
+		var pos = new Vector3(x, y, z) * 20;
+		Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform);		
+	}
+
+	void Update () {
+		if (Input.GetMouseButtonDown(1))
+		{
+			PutFlagManual();
+		}
+	}
+
+	void PutFlagManual()
+	{
+		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+		RaycastHit hit;
+		if (!Physics.Raycast(ray, out hit)) return;
+		
+		Quaternion rotation = Quaternion.LookRotation(hit.normal);
+		GameObject flag = Instantiate(flagPrefab, hit.point, rotation);
+		flag.transform.SetParent(transform);
+		//DebugUV(hit.point);
+	}
+
+	void DebugUV(Vector3 pos)
+	{
+		pos = pos / 20; //Scale to one using planet size
+		var u = 1f + Mathf.Atan2(pos.z, pos.x) / (2 * Mathf.PI);
+		if (u > 1)
+		{
+			u -= 1;
+		}
+		var v = 0.5f + Mathf.Asin(pos.y) / Mathf.PI;
+		Debug.Log(u + " : " + v);
 	}
 }

@@ -31,6 +31,13 @@ public class FlagCommand : ChatCommand {
 			return;
 		}
 
+		if (args[0] == "count")
+		{
+			var count = FlagRepository.GetAll().Count;
+			callback(count == 0 ? "No flags :(" : (count == 1) ? "1 flag total" : count + " flags total");
+			return;
+		}
+
 		string place = string.Join(" ", args);
 		flag = FlagRepository.GetByUsername(user.username);
 		bool wasNoFlag = flag == null;

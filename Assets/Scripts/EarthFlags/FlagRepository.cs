@@ -135,9 +135,9 @@ public class Flag
 		return !(a == b);
 	}
 
-	protected bool Equals(User other)
+	protected bool Equals(Flag other)
 	{
-		return string.Equals(user, other.username);
+		return string.Equals(user, other.user);
 	}
 
 	public override bool Equals(object obj)
@@ -145,7 +145,7 @@ public class Flag
 		if (ReferenceEquals(null, obj)) return false;
 		if (ReferenceEquals(this, obj)) return true;
 		if (obj.GetType() != this.GetType()) return false;
-		return Equals((User)obj);
+		return Equals((Flag)obj);
 	}
 
 	public override int GetHashCode()
