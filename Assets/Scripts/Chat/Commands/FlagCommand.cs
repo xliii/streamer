@@ -48,11 +48,15 @@ public class FlagCommand : ChatCommand
 			return;
 		}
 
-		if (args.Length > 1 && args[0] == "debug" && user.HasRole(UserRole.Streamer))
+		if (args[0] == "debug" && user.HasRole(UserRole.Streamer))
 		{
-			var debugPlace = string.Join(" ", args.Skip(1).ToArray());
 			var username = "Debug" + random.Next(1000);
-			AddFlag(username, null, debugPlace, callback);
+			var debugFlag = new Flag(username);
+			debugFlag.place = "Debug place";
+			debugFlag.latitude = (float) random.NextDouble() * 150 - 75; //omit top/bottom 15 degrees 
+			debugFlag.longitude = (float) random.NextDouble()* 360 - 180;
+			FlagRepository.Save(debugFlag);
+			callback("Random debug flag added");
 			return;
 		}
 
@@ -72,7 +76,7 @@ public class FlagCommand : ChatCommand
 
 		TwitchAPI.Geolocate(place, (formatted, lat, lng) =>
 		{
-			flag.place = formatted;
+			flag.place = place; //TODO: strip formatting. Meanwhile Unicode characters break JSON serialization
 			flag.latitude = lat;
 			flag.longitude = lng;
 			FlagRepository.Save(flag);
