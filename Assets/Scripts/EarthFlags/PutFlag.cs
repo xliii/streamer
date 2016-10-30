@@ -8,6 +8,8 @@ public class PutFlag : MonoBehaviour
 	public GameObject blueFlag;
 	public GameObject greenFlag;
 
+	public ParticleSystem flagCreate;
+
 	private Dictionary<UserRole, GameObject> prefabByRole = new Dictionary<UserRole, GameObject>();
 
 	private Dictionary<Flag, GameObject> flags = new Dictionary<Flag, GameObject>();
@@ -21,7 +23,7 @@ public class PutFlag : MonoBehaviour
 
 	void Start()
 	{
-		Messenger.AddListener<Flag>(Flag.FLAG_ADDED, Add);
+		Messenger.AddListener<Flag>(Flag.FLAG_ADDED, AddWithEffect);
 		Messenger.AddListener<Flag>(Flag.FLAG_UPDATED, UpdateFlag);
 		Messenger.AddListener<Flag>(Flag.FLAG_REMOVED, RemoveFlag);
 		Messenger.AddListener(Flag.FLAGS_CLEARED, Clear);
@@ -75,10 +77,18 @@ public class PutFlag : MonoBehaviour
 		}
 	}
 
-	void Add(Flag flag)
+	void AddWithEffect(Flag flag)
+	{
+		var flagVisual = Add(flag);
+		if (flagCreate != null)
+		{
+			Instantiate(flagCreate, flagVisual.transform.position, Quaternion.identity, flagVisual.transform.parent);
+		}
+	}
+
+	GameObject Add(Flag flag)
 	{
 		var pos = getPos(flag);
-		//TODO: Add visuals
 		var user = UserRepository.GetByUsername(flag.user);
 		UserRole role;
 		if (user == null)
@@ -97,6 +107,7 @@ public class PutFlag : MonoBehaviour
 		}
 		var flagVisual = Instantiate(prefabByRole[role], pos, Quaternion.LookRotation(pos - transform.position), transform).gameObject;
 		flags[flag] = flagVisual;
+		return flagVisual;
 	}
 
 	Vector3 getPos(Flag flag)
