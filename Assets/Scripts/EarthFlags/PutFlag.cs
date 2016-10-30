@@ -4,9 +4,20 @@ using UnityEngine;
 
 public class PutFlag : MonoBehaviour
 {
-	public GameObject flagPrefab;
+	public GameObject redFlag;
+	public GameObject blueFlag;
+	public GameObject greenFlag;
 
-	private Dictionary<Flag, Transform> flags = new Dictionary<Flag, Transform>();
+	private Dictionary<UserRole, GameObject> prefabByRole = new Dictionary<UserRole, GameObject>();
+
+	private Dictionary<Flag, GameObject> flags = new Dictionary<Flag, GameObject>();
+
+	void Awake()
+	{
+		prefabByRole[UserRole.Viewer] = redFlag;
+		prefabByRole[UserRole.Mod] = greenFlag;
+		prefabByRole[UserRole.Streamer] = blueFlag;
+	}
 
 	void Start()
 	{
@@ -19,10 +30,10 @@ public class PutFlag : MonoBehaviour
 
 	void Clear()
 	{
-		foreach (Transform t in flags.Values)
+		foreach (GameObject flag in flags.Values)
 		{
 			//TODO: Add visuals
-			Destroy(t.gameObject);
+			Destroy(flag);
 		}
 
 		flags.Clear();
@@ -35,10 +46,10 @@ public class PutFlag : MonoBehaviour
 			Debug.LogError("Flag not in dictionary: " + flag);
 		}
 
-		Transform t = flags[flag];
+		GameObject flagVisual = flags[flag];
 		var pos = getPos(flag);
-		t.position = pos;
-		t.rotation = Quaternion.LookRotation(pos - transform.position);
+		flagVisual.transform.position = pos;
+		flagVisual.transform.rotation = Quaternion.LookRotation(pos - transform.position);
 	}
 
 	void RemoveFlag(Flag flag)
@@ -48,10 +59,10 @@ public class PutFlag : MonoBehaviour
 			Debug.LogError("Flag not in dictionary: " + flag);
 		}
 
-		Transform t = flags[flag];
+		GameObject flagVisual = flags[flag];
 		flags.Remove(flag);
 		//TODO: Add visuals
-		Destroy(t.gameObject);
+		Destroy(flagVisual);
 	}
 
 	void AddFlags()
@@ -68,7 +79,24 @@ public class PutFlag : MonoBehaviour
 	{
 		var pos = getPos(flag);
 		//TODO: Add visuals
-		flags[flag] = Instantiate(flagPrefab, pos, Quaternion.LookRotation(pos - transform.position), transform).transform;
+		var user = UserRepository.GetByUsername(flag.user);
+		UserRole role;
+		if (user == null)
+		{
+			Debug.LogWarning("Could not retrieve user when adding flag: " + flag.user);
+			role = UserRole.Viewer;
+		}
+		else
+		{
+			role = user.GetBestRole();
+		}
+		if (!prefabByRole.ContainsKey(role))
+		{
+			Debug.LogError("No flag available for role: " + role + " - fallback to viewer");
+			role = UserRole.Viewer;
+		}
+		var flagVisual = Instantiate(prefabByRole[role], pos, Quaternion.LookRotation(pos - transform.position), transform).gameObject;
+		flags[flag] = flagVisual;
 	}
 
 	Vector3 getPos(Flag flag)
@@ -104,7 +132,7 @@ public class PutFlag : MonoBehaviour
 		if (!Physics.Raycast(ray, out hit)) return;
 		
 		Quaternion rotation = Quaternion.LookRotation(hit.normal);
-		GameObject flag = Instantiate(flagPrefab, hit.point, rotation);
+		GameObject flag = Instantiate(redFlag, hit.point, rotation);
 		flag.transform.SetParent(transform);
 		//DebugUV(hit.point);
 	}

@@ -9,6 +9,8 @@ public class User {
 	public List<UserRole> roles = new List<UserRole>();
 	public DateTime lastOnline;
 
+	public static UserRoleComparer userRoleComparer = new UserRoleComparer();
+
 	[SerializeField]
 	private float points;
 
@@ -33,7 +35,7 @@ public class User {
 
 	float PointsMultiplier()
 	{
-		return roles.Max(role => role.pointsMultiplier());
+		return roles.Max(role => role.PointsMultiplier());
 	}
 	
 	public bool HasAnyRole(UserRole[] requiredRoles)
@@ -43,6 +45,18 @@ public class User {
 		if (roles.Count == 0) return false;
 
 		return requiredRoles.Any(role => roles.Contains(role));
+	}
+
+	public UserRole GetBestRole()
+	{
+		if (roles.Count == 0) return UserRole.None;
+
+		Debug.Log("Roles: " + this);
+		
+		roles.Sort(userRoleComparer);
+
+		Debug.Log(roles[0]);
+		return roles[0];
 	}
 
 	public void AddPoints(float amount)
@@ -71,6 +85,11 @@ public class User {
 		{
 			roles.Add(role);
 		}
+	}
+
+	public override string ToString()
+	{
+		return string.Format("User({0} | {1} | {2}", username, Points, roles.Aggregate("", (cur, next) => cur + ", " + next));
 	}
 
 	#region Equals

@@ -1,4 +1,8 @@
-﻿public enum UserRole {
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+
+public enum UserRole {
 
 	Streamer,
 	Bot,
@@ -12,10 +16,43 @@
 
 public static class UserRoleExtensions
 {
-	public static float pointsMultiplier(this UserRole role)
+	public static float PointsMultiplier(this UserRole role)
 	{
 		if (role == UserRole.Viewer) return 1f;
 
 		return 2f;
+	}
+
+	public static int Priority(this UserRole role)
+	{
+		switch (role)
+		{
+			case UserRole.Streamer:
+				return 43;
+			case UserRole.Bot:
+				return 40;
+			case UserRole.Mod:
+				return 20;
+			case UserRole.Staff:
+				return 12;
+			case UserRole.Admin:
+				return 11;
+			case UserRole.GlobalMod:
+				return 10;
+			case UserRole.Viewer:
+				return 1;
+			case UserRole.None:
+				return 0;
+			default:
+				return 2;
+		}
+	}
+}
+
+public class UserRoleComparer : IComparer<UserRole>
+{
+	public int Compare(UserRole x, UserRole y)
+	{
+		return y.Priority() - x.Priority();
 	}
 }
