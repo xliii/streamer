@@ -23,7 +23,7 @@ public class ScrollZoom : MonoBehaviour
 		{
 			if (camera.orthographic)
 			{
-				camera.orthographicSize = Mathf.Clamp(camera.orthographicSize - scroll*scrollSpeed, 7, 40);
+				camera.orthographicSize = Mathf.Clamp(camera.orthographicSize - scroll*scrollSpeed, 4, 40);
 			}
 			else
 			{

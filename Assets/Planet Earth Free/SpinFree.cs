@@ -17,7 +17,10 @@ public class SpinFree : MonoBehaviour {
 	public float directionChangeSpeed = 2f;
 
 	// Update is called once per frame
-	void Update() {
+	void Update()
+	{
+		if (Input.GetMouseButton(0)) return;
+
 		if (direction < 1f) {
 			direction += Time.deltaTime / (directionChangeSpeed / 2);
 		}
