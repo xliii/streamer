@@ -18,6 +18,8 @@ public class PutFlag : MonoBehaviour
 
 	private AudioSource audioSource;
 
+	private int manualIndex = 0;
+
 	void Awake()
 	{
 		audioSource = GetComponent<AudioSource>();
@@ -46,10 +48,18 @@ public class PutFlag : MonoBehaviour
 		flags.Clear();
 	}
 
-	void PlayRandomSound()
+	void Sound()
 	{
 		AudioClip clip = createSounds[Random.Range(0, createSounds.Length)];
 		audioSource.PlayOneShot(clip);
+	}
+
+	void Particles(Vector3 pos)
+	{
+		if (flagCreate != null)
+		{
+			Instantiate(flagCreate, pos, Quaternion.identity, transform);
+		}
 	}
 
 	void UpdateFlag(Flag flag)
@@ -91,11 +101,8 @@ public class PutFlag : MonoBehaviour
 	void AddWithEffect(Flag flag)
 	{
 		var flagVisual = Add(flag);
-		PlayRandomSound();
-		if (flagCreate != null)
-		{
-			Instantiate(flagCreate, flagVisual.transform.position, Quaternion.identity, flagVisual.transform.parent);
-		}
+		Sound();
+		Particles(flagVisual.transform.position);
 	}
 
 	GameObject Add(Flag flag)
@@ -161,7 +168,9 @@ public class PutFlag : MonoBehaviour
 		Quaternion rotation = Quaternion.LookRotation(hit.normal);
 		GameObject flag = Instantiate(redFlag, hit.point, rotation);
 		flag.transform.SetParent(transform);
-		PlayRandomSound();
+		flags[new Flag("Manual" + (manualIndex++))] = flag;
+		Particles(hit.point);
+		Sound();
 	}
 
 	void DebugUV(Vector3 pos)
