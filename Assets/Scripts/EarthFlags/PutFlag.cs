@@ -10,12 +10,17 @@ public class PutFlag : MonoBehaviour
 
 	public ParticleSystem flagCreate;
 
+	public AudioClip[] createSounds;
+
 	private Dictionary<UserRole, GameObject> prefabByRole = new Dictionary<UserRole, GameObject>();
 
 	private Dictionary<Flag, GameObject> flags = new Dictionary<Flag, GameObject>();
 
+	private AudioSource audioSource;
+
 	void Awake()
 	{
+		audioSource = GetComponent<AudioSource>();
 		prefabByRole[UserRole.Viewer] = redFlag;
 		prefabByRole[UserRole.Mod] = greenFlag;
 		prefabByRole[UserRole.Streamer] = blueFlag;
@@ -39,6 +44,12 @@ public class PutFlag : MonoBehaviour
 		}
 
 		flags.Clear();
+	}
+
+	void PlayRandomSound()
+	{
+		AudioClip clip = createSounds[Random.Range(0, createSounds.Length)];
+		audioSource.PlayOneShot(clip);
 	}
 
 	void UpdateFlag(Flag flag)
@@ -80,6 +91,7 @@ public class PutFlag : MonoBehaviour
 	void AddWithEffect(Flag flag)
 	{
 		var flagVisual = Add(flag);
+		PlayRandomSound();
 		if (flagCreate != null)
 		{
 			Instantiate(flagCreate, flagVisual.transform.position, Quaternion.identity, flagVisual.transform.parent);
