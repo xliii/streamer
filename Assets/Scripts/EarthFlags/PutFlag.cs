@@ -105,7 +105,11 @@ public class PutFlag : MonoBehaviour
 		UserRole role;
 		if (user == null)
 		{
-			Debug.LogWarning("Could not retrieve user when adding flag: " + flag.user);
+			if (!flag.user.StartsWith("Debug"))
+			{
+				Debug.LogWarning("Could not retrieve user when adding flag: " + flag.user);
+			}
+			
 			role = UserRole.Viewer;
 		}
 		else
@@ -157,7 +161,7 @@ public class PutFlag : MonoBehaviour
 		Quaternion rotation = Quaternion.LookRotation(hit.normal);
 		GameObject flag = Instantiate(redFlag, hit.point, rotation);
 		flag.transform.SetParent(transform);
-		//DebugUV(hit.point);
+		PlayRandomSound();
 	}
 
 	void DebugUV(Vector3 pos)

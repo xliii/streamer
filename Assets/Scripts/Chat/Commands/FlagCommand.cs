@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Random = System.Random;
 
 public class FlagCommand : ChatCommand
 {
@@ -50,13 +54,31 @@ public class FlagCommand : ChatCommand
 
 		if (args[0] == "debug" && user.HasRole(UserRole.Streamer))
 		{
-			var username = "Debug" + random.Next(1000);
-			var debugFlag = new Flag(username);
-			debugFlag.place = "Debug place";
-			debugFlag.latitude = (float) random.NextDouble() * 150 - 75; //omit top/bottom 15 degrees 
-			debugFlag.longitude = (float) random.NextDouble()* 360 - 180;
-			FlagRepository.Save(debugFlag);
-			callback("Random debug flag added");
+			PutFlag earth = FindObjectOfType<PutFlag>();
+			if (earth == null) return;
+
+			int count = 1;
+			if (args.Length > 1)
+			{
+				if (!int.TryParse(args[1], out count))
+				{
+					count = 1;
+				}
+			}
+
+			float delay = 1;
+			if (args.Length > 2)
+			{
+				if (!float.TryParse(args[2], out delay))
+				{
+					delay = 1;
+				}
+			}
+
+
+			earth.StartCoroutine(AddDebugFlag(count, delay));
+			
+			callback(count + " random debug flag added");
 			return;
 		}
 
@@ -64,6 +86,24 @@ public class FlagCommand : ChatCommand
 		flag = FlagRepository.GetByUsername(user.username);
 		
 		AddFlag(user.username, flag, place, callback);
+	}
+
+	private IEnumerator AddDebugFlag(int count, float delay)
+	{
+		while (count > 0)
+		{
+			count--;
+			var username = "Debug" + random.Next(1000);
+			var debugFlag = new Flag(username)
+			{
+				place = "Debug place",
+				latitude = (float)random.NextDouble() * 150 - 75,
+				longitude = (float)random.NextDouble() * 360 - 180
+			};
+			//omit top/bottom 15 degrees 
+			FlagRepository.Save(debugFlag);
+			yield return new WaitForSeconds(delay);
+		}
 	}
 
 	private void AddFlag(string username, Flag flag, string place, Action<string> callback)
