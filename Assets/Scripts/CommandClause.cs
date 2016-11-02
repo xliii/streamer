@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Linq;
@@ -8,13 +7,14 @@ public abstract class CommandClause
 {
 	private string[] option;
 
+	//TODO: Move to Context - this is horribly broken
 	protected List<string> resolvedArgs = new List<string>();
 
 	public bool invalid;
 
-	protected CommandClause(string option = "")
+	protected CommandClause(string option = null)
 	{
-		if (!string.IsNullOrEmpty(option))
+		if (option != null)
 		{
 			this.option = ParseOption(option);
 		}
@@ -43,6 +43,9 @@ public abstract class CommandClause
 			//default
 			return true;
 		}
+
+		//Check for 0 args
+		if (option.Length == 1 && option[0] == "" && args.Length == 0) return true;
 
 		if (option.Length > args.Length) return false;
 
@@ -85,7 +88,7 @@ public class CommandClause0 : CommandClause
 {
 	private ChatCommand.ZeroArg response;
 
-	public CommandClause0(ChatCommand.ZeroArg zeroArg, string option = "") : base(option)
+	public CommandClause0(ChatCommand.ZeroArg zeroArg, string option = null) : base(option)
 	{
 		response = zeroArg;
 	}
@@ -100,7 +103,7 @@ public class CommandClause1 : CommandClause
 {
 	private ChatCommand.OneArg response;
 
-	public CommandClause1(ChatCommand.OneArg oneArg, string option = "") : base(option)
+	public CommandClause1(ChatCommand.OneArg oneArg, string option = null) : base(option)
 	{
 		response = oneArg;
 	}
@@ -115,7 +118,7 @@ public class CommandClause2 : CommandClause
 {
 	private ChatCommand.TwoArg response;
 
-	public CommandClause2(ChatCommand.TwoArg twoArg, string option = "") : base(option)
+	public CommandClause2(ChatCommand.TwoArg twoArg, string option = null) : base(option)
 	{
 		response = twoArg;
 	}
@@ -124,4 +127,11 @@ public class CommandClause2 : CommandClause
 	{
 		response(Arg(0), Arg(1), callback);
 	}
+}
+
+public class Context
+{
+	public User user;
+	public string[] args;
+	public string[] resolvedArgs;
 }

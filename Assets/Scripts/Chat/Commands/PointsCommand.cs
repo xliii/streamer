@@ -1,29 +1,28 @@
-﻿using System;
+﻿public class PointsCommand : ChatCommand {
 
-public class PointsCommand : ChatCommand {
-	public override void process(User user, string[] args, Action<string> callback)
+	public override ZeroArg Default()
 	{
-		if (args.Length == 0)
+		return c => c("Usage: !points");
+	}
+
+	public override void Clauses()
+	{
+		//TODO: Resolve caller's points from context
+		Clause("", c => c("That's a secret Kappa"));
+		Clause("USERNAME", (username, callback) =>
 		{
-			callback("You have " + user.Points + " points");
-			return;
-		}
+			var target = UserRepository.GetByUsername(username);
 
-		var target = UserRepository.GetByUsername(args[0]);
+			if (target == null)
+			{
+				callback("User \"" + username + "\" does not exist");
+				return;
+			}
+			
+			//TODO: Check for oneself - we need context
 
-		if (target == null)
-		{
-			callback("User \"" + args[0] + "\" does not exist");
-			return;
-		}
-
-		if (target == user)
-		{
-			callback("You have " + user.Points + " points");
-			return;
-		}
-
-		callback(target.username + " has " + target.Points + " points");
+			callback(target.username + " has " + target.Points + " points");
+		});
 	}
 
 	public override string command()
