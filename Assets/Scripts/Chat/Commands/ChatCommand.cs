@@ -90,5 +90,9 @@ public abstract class ChatCommand : ScriptableObject {
 	public delegate void TwoArg(string arg1, string arg2, Action<string> callback);
 
 	//All the trailing arguments
+	//TODO: properties 
+	// REST(>N) - more than N chars
+	// REST(<N) - less than N chars
+	// REST(-N) - truncate to N chars
 	public static string REST = "REST";
 }

@@ -48,25 +48,27 @@ public class SetGameCommand : ChatCommand
 		return "!game";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override void Clauses()
 	{
-		if (args.Length == 0)
+		Clause("REST", (title, callback) =>
 		{
-			callback("Please specify game");
-			return;
-		}
-
-		string game = string.Join(" ", args);
-		TwitchAPI.SetGame(game, success =>
-		{
-			if (success)
+			TwitchAPI.SetGame(title, success =>
 			{
-				callback("Game updated");
-			} else
-			{
-				callback("ERROR! Game not updated :(");
-			}
+				if (success)
+				{
+					callback("Game updated");
+				}
+				else
+				{
+					callback("ERROR! Game not updated :(");
+				}
+			});
 		});
+	}
+
+	public override ZeroArg Default()
+	{
+		return c => c("Usage: !game GAME");
 	}
 
 	public override bool hide()
@@ -87,26 +89,30 @@ public class UptimeCommand : ChatCommand
 		return "!uptime";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override ZeroArg Default()
 	{
-		TwitchAPI.Uptime((success, response) =>
+		return callback =>
 		{
-			if (success)
+			TwitchAPI.Uptime((success, response) =>
 			{
-				if (response == null)
+				if (success)
 				{
-					callback("Stream is currently offline");
-				} else
-				{
-					DateTime time = DateTime.Parse(response);
-					TimeSpan diff = DateTime.Now.Subtract(time);
-					callback(string.Format("Uptime: {0:00}:{1:00}:{2:00}", diff.Hours, diff.Minutes, diff.Seconds));
+					if (response == null)
+					{
+						callback("Stream is currently offline");
+					}
+					else
+					{
+						DateTime time = DateTime.Parse(response);
+						TimeSpan diff = DateTime.Now.Subtract(time);
+						callback(string.Format("Uptime: {0:00}:{1:00}:{2:00}", diff.Hours, diff.Minutes, diff.Seconds));
+					}
 				}
-			} else
-			{
-				callback("ERROR! Couldn't retrieve uptime :(");
-			}
-		});
+				else
+				{
+					callback("ERROR! Couldn't retrieve uptime :(");
+				}
+			});
+		};
 	}
-	
 }
