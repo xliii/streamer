@@ -17,6 +17,7 @@ public class CustomCommandEngine
 	!twitch,
 	!twitter,
 	!soundcloud,
+	!points
 
 	- PARTIALLY -
 
@@ -27,8 +28,10 @@ public class CustomCommandEngine
 
 	- TO DO -
 	
-	!points
-	
+	!flag
+	!give
+	!scheduled
+	!custom
 
 	-= KEYWORDS =-
 
