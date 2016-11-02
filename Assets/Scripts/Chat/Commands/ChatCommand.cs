@@ -95,4 +95,6 @@ public abstract class ChatCommand : ScriptableObject {
 	// REST(<N) - less than N chars
 	// REST(-N) - truncate to N chars
 	public static string REST = "REST";
+	public static string USER = "USER";
+	public static string POINTS = "POINTS";
 }

@@ -3,26 +3,43 @@ using System.Collections.Generic;
 using System.Security.Policy;
 using UnityEngine;
 
-public class CustomCommandEngine {
-	//DONE
-	//!more, 
-	//!ping,
-	//!twitch, 
-	//!twitter, 
-	//!soundcloud, 
-	//!title
-	//!game
-	//!uptime
+public class CustomCommandEngine
+{
+	/*
+	-= COMMANDS =-
+	
+	- CONFIG -
+	
+	- DONE -
 
-	//TODO: MIGRATE
-	//!xliii
-	//!points
+	!more, 
+	!ping,
+	!twitch,
+	!twitter,
+	!soundcloud,
+
+	- PARTIALLY -
+
+	!title
+	!game
+	!uptime
+	!xliii
+
+	- TO DO -
+	
+	!points
 	
 
-	//KEYWORDS:
-	//{user} -> calling user name
-	//{points} -> calling user points
-	//{customapi} -> http.get
+	-= KEYWORDS =-
 
+	- DONE -
 
+	REST -> Rest of the arguments
+
+	- TO DO -
+
+	USER -> calling user name
+	POINTS -> calling user points
+	CUSTOMAPI -> http.get
+	*/
 }
