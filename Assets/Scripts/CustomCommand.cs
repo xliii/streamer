@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class CustomCommand : ChatCommand
 {
-	public string commandName = "";
-	
+	public string commandName = "Custom Command";
 
 	public override string command()
 	{

@@ -6,21 +6,22 @@ public abstract class ChatCommand : ScriptableObject {
 
 	protected List<CommandClause> clauses = new List<CommandClause>();
 
+	//TODO: Replace this with specific error message
+	public bool invalid;
+
 	protected ChatCommand()
 	{
-		clauses.Add(Def(Default()));
 		Clauses();
+		DefaultClause(Default());
 	}
 
-	public virtual Func<string> Default()
+	public virtual ZeroArg Default()
 	{
-		return () => "DEFAULT CATCH CLAUSE";
+		Debug.Log("Default not implemented for " + command());
+		return callback => callback("DEFAULT CATCH CLAUSE");
 	}
 
-	public virtual void Clauses()
-	{
-		Debug.Log("Clauses not overriden");
-	}
+	public virtual void Clauses() {}
 
 	public virtual void process(User user, string[] args, Action<string> callback)
 	{
@@ -28,7 +29,7 @@ public abstract class ChatCommand : ScriptableObject {
 		{
 			if (!clause.Matches(args)) continue;
 
-			callback(clause.Process());
+			clause.Process(callback);
 			return;
 		}
 		Debug.LogError("Default clause didn't catch - WE SHOULD NOT BE HERE");
@@ -56,23 +57,38 @@ public abstract class ChatCommand : ScriptableObject {
 		return command.StartsWith("!") ? command : "!" + command;
 	}
 
-	private CommandClause Def(Func<string> response)
+	private void DefaultClause(ZeroArg response)
 	{
-		return new CommandClause0(response);
+		var clause = new CommandClause0(response);
+		invalid |= clause.invalid;
+		clauses.Add(clause);
 	}
 
-	protected CommandClause Clause(string option, Func<string> response)
+	protected void Clause(string option, ZeroArg response)
 	{
-		return new CommandClause0(response, option);
+		var clause = new CommandClause0(response, option);
+		invalid |= clause.invalid;
+		clauses.Add(clause);
 	}
 
-	protected CommandClause Clause(string option, Func<string, string> response)
+	protected void Clause(string option, OneArg response)
 	{
-		return new CommandClause1(response, option);
+		var clause = new CommandClause1(response, option);
+		invalid |= clause.invalid;
+		clauses.Add(clause);
 	}
 
-	protected CommandClause Clause(string option, Func<string, string, string> response)
+	protected void Clause(string option, TwoArg response)
 	{
-		return new CommandClause2(response, option);
+		var clause = new CommandClause2(response, option);
+		invalid |= clause.invalid;
+		clauses.Add(clause);
 	}
+
+	public delegate void ZeroArg(Action<string> callback);
+	public delegate void OneArg(string arg1, Action<string> callback);
+	public delegate void TwoArg(string arg1, string arg2, Action<string> callback);
+
+	//All the trailing arguments
+	public static string REST = "REST";
 }

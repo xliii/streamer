@@ -74,7 +74,20 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		{
 			Debug.Log("Adding custom command");
 		}
-		commands.Add(ScriptableObject.CreateInstance(t) as ChatCommand);
+		ChatCommand command = ScriptableObject.CreateInstance(t) as ChatCommand;
+		if (command == null)
+		{
+			Debug.LogError("Could not instantiate command: " + t);
+			return;
+		}
+
+		if (command.invalid)
+		{
+			Debug.LogError("Command " + command.command() + " is invalid");
+			return;
+		}
+
+		commands.Add(command);
 	}
 
 	private void Process(ChatCommand command, User user, string[] args)

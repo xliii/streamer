@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 public abstract class CommandClause
 {
 	private string[] option;
 
 	protected List<string> resolvedArgs = new List<string>();
+
+	public bool invalid;
 
 	protected CommandClause(string option = "")
 	{
@@ -19,7 +22,18 @@ public abstract class CommandClause
 
 	private string[] ParseOption(string value)
 	{
-		return value.Split(' ');
+		string[] args = value.Split(' ');
+		//Formal arguments validation
+		for (int i = 0; i < args.Length; i++)
+		{
+			if (args[i] == ChatCommand.REST && i != args.Length - 1)
+			{
+				//REST should be the last formal argument
+				invalid = true;
+				break;
+			}
+		}
+		return args;
 	}
 
 	public bool Matches(string[] args)
@@ -30,21 +44,24 @@ public abstract class CommandClause
 			return true;
 		}
 
-		if (option.Length != args.Length) return false;
+		if (option.Length > args.Length) return false;
 
-		for (int i = 0; i < args.Length; i++)
+		for (int i = 0; i < option.Length; i++)
 		{
 			var actual = args[i];
 			var formal = option[i];
 
+			if (formal == ChatCommand.REST)
+			{
+				//Rest of the actual arguments as one
+				resolvedArgs.Add(string.Join(" ", args.Skip(i).ToArray()));
+				break;
+			}
+
 			//Exact match
 			if (formal.ToLower() == formal && formal != actual) return false;
-			
-			//Placeholder
-			if (formal.ToUpper() == formal)
-			{
-				resolvedArgs.Add(actual);
-			}
+
+			resolvedArgs.Add(actual);
 		}
 
 		return true;
@@ -61,50 +78,50 @@ public abstract class CommandClause
 		return resolvedArgs[index];
 	}
 
-	public abstract string Process();
+	public abstract void Process(Action<string> callback);
 }
 
 public class CommandClause0 : CommandClause
 {
-	private Func<string> response;
+	private ChatCommand.ZeroArg response;
 
-	public CommandClause0(Func<string> noArg, string option = "") : base(option)
+	public CommandClause0(ChatCommand.ZeroArg zeroArg, string option = "") : base(option)
 	{
-		response = noArg;
+		response = zeroArg;
 	}
 
-	public override string Process()
+	public override void Process(Action<string> callback)
 	{
-		return response();
+		response(callback);
 	}
 }
 
 public class CommandClause1 : CommandClause
 {
-	private Func<string, string> response;
+	private ChatCommand.OneArg response;
 
-	public CommandClause1(Func<string, string> oneArg, string option = "") : base(option)
+	public CommandClause1(ChatCommand.OneArg oneArg, string option = "") : base(option)
 	{
 		response = oneArg;
 	}
 
-	public override string Process()
+	public override void Process(Action<string> callback)
 	{
-		return response(Arg(0));
+		response(Arg(0), callback);
 	}
 }
 
 public class CommandClause2 : CommandClause
 {
-	private Func<string, string, string> response;
+	private ChatCommand.TwoArg response;
 
-	public CommandClause2(Func<string, string, string> twoArg, string option = "") : base(option)
+	public CommandClause2(ChatCommand.TwoArg twoArg, string option = "") : base(option)
 	{
 		response = twoArg;
 	}
 
-	public override string Process()
+	public override void Process(Action<string> callback)
 	{
-		return response(Arg(0), Arg(1));
+		response(Arg(0), Arg(1), callback);
 	}
 }

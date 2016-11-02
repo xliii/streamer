@@ -51,11 +51,7 @@ public class User {
 	{
 		if (roles.Count == 0) return UserRole.None;
 
-		Debug.Log("Roles: " + this);
-		
 		roles.Sort(userRoleComparer);
-
-		Debug.Log(roles[0]);
 		return roles[0];
 	}
 

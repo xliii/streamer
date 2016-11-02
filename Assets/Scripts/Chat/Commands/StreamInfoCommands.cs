@@ -7,25 +7,27 @@ public class SetTitleCommand : ChatCommand
 		return "!title";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override void Clauses()
 	{
-		if (args.Length == 0)
+		Clause("REST", (title, callback) =>
 		{
-			callback("Please specify title");
-			return;
-		}
-
-		string title = string.Join(" ", args);
-		TwitchAPI.SetTitle(title, success =>
-		{
-			if (success)
+			TwitchAPI.SetTitle(title, success =>
 			{
-				callback("Title updated");
-			} else
-			{
-				callback("ERROR! Title not updated :(");
-			}
+				if (success)
+				{
+					callback("Title updated");
+				}
+				else
+				{
+					callback("ERROR! Title not updated :(");
+				}
+			});
 		});
+	}
+
+	public override ZeroArg Default()
+	{
+		return c => c("Usage: !title TITLE");
 	}
 
 	public override bool hide()

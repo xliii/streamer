@@ -19,8 +19,8 @@ public class XliiiCommand : ChatCommand
 		return "!xliii";
 	}
 
-	public override Func<string> Default()
+	public override ZeroArg Default()
 	{
-		return () => responses[random.Next(responses.Length)];
+		return callback => callback(responses[random.Next(responses.Length)]);
 	}
 }
