@@ -9,7 +9,7 @@ public class SetTitleCommand : ChatCommand
 
 	public override void Clauses()
 	{
-		Clause("REST", (title, callback) =>
+		Clause(Keyword.REST, (title, callback) =>
 		{
 			TwitchAPI.SetTitle(title, success =>
 			{
@@ -50,7 +50,7 @@ public class SetGameCommand : ChatCommand
 
 	public override void Clauses()
 	{
-		Clause("REST", (title, callback) =>
+		Clause(Keyword.REST, (title, callback) =>
 		{
 			TwitchAPI.SetGame(title, success =>
 			{

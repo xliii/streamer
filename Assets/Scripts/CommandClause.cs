@@ -7,9 +7,6 @@ public abstract class CommandClause
 {
 	private string[] option;
 
-	//TODO: Move to Context - this is horribly broken
-	protected List<string> resolvedArgs = new List<string>();
-
 	public bool invalid;
 
 	protected CommandClause(string option = null)
@@ -26,7 +23,7 @@ public abstract class CommandClause
 		//Formal arguments validation
 		for (int i = 0; i < args.Length; i++)
 		{
-			if (args[i] == ChatCommand.REST && i != args.Length - 1)
+			if (args[i] == Keyword.REST && i != args.Length - 1)
 			{
 				//REST should be the last formal argument
 				invalid = true;
@@ -36,7 +33,7 @@ public abstract class CommandClause
 		return args;
 	}
 
-	public bool Matches(string[] args)
+	public bool Matches(Context context)
 	{
 		if (option == null)
 		{
@@ -45,43 +42,56 @@ public abstract class CommandClause
 		}
 
 		//Check for 0 args
-		if (option.Length == 1 && option[0] == "" && args.Length == 0) return true;
+		if (option.Length == 1 && option[0] == "" && context.args.Length == 0) return true;
 
-		if (option.Length > args.Length) return false;
+		if (option.Length > context.args.Length) return false;
 
 		for (int i = 0; i < option.Length; i++)
 		{
-			var actual = args[i];
+			var actual = context.args[i];
 			var formal = option[i];
 
-			if (formal == ChatCommand.REST)
+			if (formal == Keyword.REST)
 			{
 				//Rest of the actual arguments as one
-				resolvedArgs.Add(string.Join(" ", args.Skip(i).ToArray()));
+				context.resolvedArgs.Add(string.Join(" ", context.args.Skip(i).ToArray()));
 				break;
 			}
 
 			//Exact match
 			if (formal.ToLower() == formal && formal != actual) return false;
 
-			resolvedArgs.Add(actual);
+			bool resolved = false;
+			foreach (Keyword keyword in Keyword.ALL)
+			{
+				if (keyword.Name() != formal) continue;
+
+				var expected = keyword.Resolve(context);
+				if (expected != actual) return false;
+
+				context.resolvedArgs.Add(expected);
+				resolved = true;
+				break;
+			}
+
+			if (resolved) continue;
+
+			context.resolvedArgs.Add(actual);
 		}
 
 		return true;
 	}
 
-	protected string Arg(int index)
-	{
-		//TODO: Support keywords: USER, POINTS, COMMAND
-		var formal = option[index];
-		if (formal == "USER")
-		{
-			Debug.LogError("CommandClause tried to retrieve USER");
-		}
-		return resolvedArgs[index];
-	}
+	public abstract void Process(Context context);
 
-	public abstract void Process(Action<string> callback);
+	protected string ResolveKeywords(string response, Context context)
+	{		
+		foreach (var keyword in Keyword.ALL)
+		{
+			response = response.Replace(keyword.Name(), keyword.Resolve(context));
+		}
+		return response;
+	}
 }
 
 public class CommandClause0 : CommandClause
@@ -93,9 +103,10 @@ public class CommandClause0 : CommandClause
 		response = zeroArg;
 	}
 
-	public override void Process(Action<string> callback)
+	public override void Process(Context context)
 	{
-		response(callback);
+		//TODO: Resolve actual arg keywords
+		response(s => context.callback(ResolveKeywords(s, context)));
 	}
 }
 
@@ -108,9 +119,9 @@ public class CommandClause1 : CommandClause
 		response = oneArg;
 	}
 
-	public override void Process(Action<string> callback)
+	public override void Process(Context context)
 	{
-		response(Arg(0), callback);
+		response(context[0], s => context.callback(ResolveKeywords(s, context)));
 	}
 }
 
@@ -123,9 +134,9 @@ public class CommandClause2 : CommandClause
 		response = twoArg;
 	}
 
-	public override void Process(Action<string> callback)
+	public override void Process(Context context)
 	{
-		response(Arg(0), Arg(1), callback);
+		response(context[0], context[1], s => context.callback(ResolveKeywords(s, context)));
 	}
 }
 
@@ -133,5 +144,18 @@ public class Context
 {
 	public User user;
 	public string[] args;
-	public string[] resolvedArgs;
+	public Action<string> callback;
+	public List<string> resolvedArgs = new List<string>();
+
+	public Context(User user, string[] args, Action<string> callback)
+	{
+		this.user = user;
+		this.args = args;
+		this.callback = callback;
+	}
+
+	public string this[int i]
+	{
+		get { return args[i]; }
+	}
 }

@@ -32,55 +32,55 @@ public class ManageCustomCommand : ChatCommand {
 		return "!custom";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override void process(Context ctx)
 	{
-		if (args.Length < 1)
+		if (ctx.args.Length < 1)
 		{
 			//TODO: Fix usage message
-			callback("USAGE: !custom list");
+			ctx.callback("USAGE: !custom list");
 			return;
 		}
 
-		if (args[0] == "list")
+		if (ctx.args[0] == "list")
 		{
 			if (cmds.Count == 0)
 			{
-				callback("No custom commands registered");
+				ctx.callback("No custom commands registered");
 				return;
 			}
-			callback(string.Join(", ", cmds.Keys.ToArray()));
+			ctx.callback(string.Join(", ", cmds.Keys.ToArray()));
 			return;
 		}
 
-		if (args.Length < 2)
+		if (ctx.args.Length < 2)
 		{
-			callback("USAGE: !custom add COMMAND");
+			ctx.callback("USAGE: !custom add COMMAND");
 			return;
 		}
 
-		string command = args[1];
+		string command = ctx.args[1];
 
-		if (args[0] == "remove")
+		if (ctx.args[0] == "remove")
 		{
 			if (!cmds.Keys.Contains(command))
 			{
-				callback("No such custom command: " + Normalize(command));
+				ctx.callback("No such custom command: " + Normalize(command));
 				return;
 			}
 
 			cmds.Remove(command);
-			callback("Custom command removed");
+			ctx.callback("Custom command removed");
 			return;
 		}
 
-		if (args[0] == "add")
+		if (ctx.args[0] == "add")
 		{
-			string response = args.Length > 2 ? args[2] : "Default response";
+			string response = ctx.args.Length > 2 ? ctx.args[2] : "Default response";
 			cmds[command] = response;
-			callback("Custom command added");
+			ctx.callback("Custom command added");
 			return;
 		}
 
-		callback("Unknown options: " + string.Join(" ", args));
+		ctx.callback("Unknown options: " + string.Join(" ", ctx.args));
 	}
 }

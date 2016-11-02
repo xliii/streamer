@@ -23,13 +23,13 @@ public abstract class ChatCommand : ScriptableObject {
 
 	public virtual void Clauses() {}
 
-	public virtual void process(User user, string[] args, Action<string> callback)
+	public virtual void process(Context context)
 	{
 		foreach (var clause in clauses)
 		{
-			if (!clause.Matches(args)) continue;
+			if (!clause.Matches(context)) continue;
 
-			clause.Process(callback);
+			clause.Process(context);
 			return;
 		}
 		Debug.LogError("Default clause didn't catch - WE SHOULD NOT BE HERE");
@@ -88,13 +88,4 @@ public abstract class ChatCommand : ScriptableObject {
 	public delegate void ZeroArg(Action<string> callback);
 	public delegate void OneArg(string arg1, Action<string> callback);
 	public delegate void TwoArg(string arg1, string arg2, Action<string> callback);
-
-	//All the trailing arguments
-	//TODO: properties 
-	// REST(>N) - more than N chars
-	// REST(<N) - less than N chars
-	// REST(-N) - truncate to N chars
-	public static string REST = "REST";
-	public static string USER = "USER";
-	public static string POINTS = "POINTS";
 }

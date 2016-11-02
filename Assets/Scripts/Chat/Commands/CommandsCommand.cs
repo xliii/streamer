@@ -1,13 +1,14 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 
 public class CommandsCommand : ChatCommand {
-
-	public override void process(User user, string[] args, Action<string> callback)
+	public override ZeroArg Default()
 	{
-		string commands = TwitchIRCProcessor.commands.Where(cmd => !cmd.hide())
+		return callback =>
+		{
+			string commands = TwitchIRCProcessor.commands.Where(cmd => !cmd.hide())
 			.Aggregate("", (current, cmd) => current + ", " + cmd.command());
-		callback("Available commands: " + commands);
+			callback("Available commands: " + commands);
+		};
 	}
 
 	public override string command()

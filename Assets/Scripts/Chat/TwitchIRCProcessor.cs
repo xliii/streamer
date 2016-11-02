@@ -92,13 +92,19 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	private void Process(ChatCommand command, User user, string[] args)
 	{
-		command.process(user, args, response =>
+		Context context = new Context(user, args, callback());
+		command.process(context);
+	}
+
+	private Action<string> callback()
+	{
+		return response =>
 		{
 			if (!string.IsNullOrEmpty(response))
 			{
 				irc.SendMsg(response);
 			}
-		});
+		};
 	}
 
 	// Use this for initialization

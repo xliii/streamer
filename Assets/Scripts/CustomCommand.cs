@@ -4,16 +4,17 @@ using UnityEngine;
 
 public class CustomCommand : ChatCommand
 {
-	public string commandName = "Custom Command";
+	public string commandName = "!customcustom";
 
 	public override string command()
 	{
 		return commandName;
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override void process(Context context)
 	{
-		
+
+		context.callback("DO LITERALLY NOTHING");
 	}
 
 	public override bool hide()

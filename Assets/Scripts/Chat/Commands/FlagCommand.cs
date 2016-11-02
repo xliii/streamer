@@ -14,62 +14,62 @@ public class FlagCommand : ChatCommand
 		return "!flag";
 	}
 
-	public override void process(User user, string[] args, Action<string> callback)
+	public override void process(Context ctx)
 	{
 		Flag flag;
-		if (args.Length == 0)
+		if (ctx.args.Length == 0)
 		{
-			flag = FlagRepository.GetByUsername(user.username);
+			flag = FlagRepository.GetByUsername(ctx.user.username);
 			if (flag == null)
 			{
-				callback("You have no flag");
+				ctx.callback("You have no flag");
 			}
 			else
 			{
-				callback("You have a flag at " + flag.place);
+				ctx.callback("You have a flag at " + flag.place);
 			}
 			return;
 		}
 
-		if (args[0] == "delete" || args[0] == "remove")
+		if (ctx.args[0] == "delete" || ctx.args[0] == "remove")
 		{
-			bool deleted = FlagRepository.DeleteByUsername(user.username);
-			callback(deleted ? "Flag deleted" : "You have no flag");
+			bool deleted = FlagRepository.DeleteByUsername(ctx.user.username);
+			ctx.callback(deleted ? "Flag deleted" : "You have no flag");
 			return;
 		}
 
-		if (args[0] == "clear" && user.HasRole(UserRole.Streamer))
+		if (ctx.args[0] == "clear" && ctx.user.HasRole(UserRole.Streamer))
 		{
 			int deleted = FlagRepository.Clear();
-			callback(deleted == 0 ? "There were no flags" : deleted == 1 ? "1 flag deleted" : deleted + " flags deleted");
+			ctx.callback(deleted == 0 ? "There were no flags" : deleted == 1 ? "1 flag deleted" : deleted + " flags deleted");
 			return;
 		}
 
-		if (args[0] == "count")
+		if (ctx.args[0] == "count")
 		{
 			var count = FlagRepository.GetAll().Count;
-			callback(count == 0 ? "No flags :(" : (count == 1) ? "1 flag total" : count + " flags total");
+			ctx.callback(count == 0 ? "No flags :(" : (count == 1) ? "1 flag total" : count + " flags total");
 			return;
 		}
 
-		if (args[0] == "debug" && user.HasRole(UserRole.Streamer))
+		if (ctx.args[0] == "debug" && ctx.user.HasRole(UserRole.Streamer))
 		{
 			PutFlag earth = FindObjectOfType<PutFlag>();
 			if (earth == null) return;
 
 			int count = 1;
-			if (args.Length > 1)
+			if (ctx.args.Length > 1)
 			{
-				if (!int.TryParse(args[1], out count))
+				if (!int.TryParse(ctx.args[1], out count))
 				{
 					count = 1;
 				}
 			}
 
 			float delay = 1;
-			if (args.Length > 2)
+			if (ctx.args.Length > 2)
 			{
-				if (!float.TryParse(args[2], out delay))
+				if (!float.TryParse(ctx.args[2], out delay))
 				{
 					delay = 1;
 				}
@@ -77,15 +77,15 @@ public class FlagCommand : ChatCommand
 
 
 			earth.StartCoroutine(AddDebugFlag(count, delay));
-			
-			callback(count + " random debug flag added");
+
+			ctx.callback(count + " random debug flag added");
 			return;
 		}
 
-		string place = string.Join(" ", args);
-		flag = FlagRepository.GetByUsername(user.username);
+		string place = string.Join(" ", ctx.args);
+		flag = FlagRepository.GetByUsername(ctx.user.username);
 		
-		AddFlag(user.username, flag, place, callback);
+		AddFlag(ctx.user.username, flag, place, ctx.callback);
 	}
 
 	private IEnumerator AddDebugFlag(int count, float delay)
