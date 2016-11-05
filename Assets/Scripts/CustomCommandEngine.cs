@@ -20,6 +20,7 @@ public class CustomCommandEngine
 	!points
 	!scheduled
 	!give
+	!flag
 
 	- PARTIALLY -
 
@@ -30,7 +31,7 @@ public class CustomCommandEngine
 
 	- TO DO -
 	
-	!flag
+	
 	
 	!custom
 

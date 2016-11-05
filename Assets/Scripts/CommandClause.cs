@@ -10,6 +10,7 @@ public abstract class CommandClause
 
 	public bool invalid;
 
+	//TODO: role support as with description
 	public CommandClause Description(string description)
 	{
 		this.description = description;

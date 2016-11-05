@@ -14,12 +14,11 @@ public class FlagCommand : ChatCommand
 		return "!flag";
 	}
 
-	public override void process(Context ctx)
+	public override void Clauses()
 	{
-		Flag flag;
-		if (ctx.args.Length == 0)
+		Clause("", ctx =>
 		{
-			flag = FlagRepository.GetByUsername(ctx.user.username);
+			var flag = FlagRepository.GetByUsername(ctx.user.username);
 			if (flag == null)
 			{
 				ctx.callback("You have no flag");
@@ -28,64 +27,67 @@ public class FlagCommand : ChatCommand
 			{
 				ctx.callback("You have a flag at " + flag.place);
 			}
-			return;
-		}
-
-		if (ctx.args[0] == "delete" || ctx.args[0] == "remove")
-		{
-			bool deleted = FlagRepository.DeleteByUsername(ctx.user.username);
-			ctx.callback(deleted ? "Flag deleted" : "You have no flag");
-			return;
-		}
-
-		if (ctx.args[0] == "clear" && ctx.user.HasRole(UserRole.Streamer))
+		});
+		Clause("clear", ctx =>
 		{
 			int deleted = FlagRepository.Clear();
 			ctx.callback(deleted == 0 ? "There were no flags" : deleted == 1 ? "1 flag deleted" : deleted + " flags deleted");
-			return;
-		}
-
-		if (ctx.args[0] == "count")
+		});
+		Clause("count", ctx =>
 		{
 			var count = FlagRepository.GetAll().Count;
 			ctx.callback(count == 0 ? "No flags :(" : (count == 1) ? "1 flag total" : count + " flags total");
-			return;
-		}
-
-		if (ctx.args[0] == "debug" && ctx.user.HasRole(UserRole.Streamer))
+		});
+		Clause("debug", Debug);
+		Clause("delete", Remove);
+		Clause("remove", Remove);
+		Clause(Param.REST, (place, ctx) =>
 		{
-			PutFlag earth = FindObjectOfType<PutFlag>();
-			if (earth == null) return;
+			var flag = FlagRepository.GetByUsername(ctx.user.username);
+			AddFlag(ctx.user.username, flag, place, ctx.callback);
+		});
+	}
 
-			int count = 1;
-			if (ctx.args.Length > 1)
-			{
-				if (!int.TryParse(ctx.args[1], out count))
-				{
-					count = 1;
-				}
-			}
+	private void Remove(Context ctx)
+	{
+		bool deleted = FlagRepository.DeleteByUsername(ctx.user.username);
+		ctx.callback(deleted ? "Flag deleted" : "You have no flag");
+	}
 
-			float delay = 1;
-			if (ctx.args.Length > 2)
-			{
-				if (!float.TryParse(ctx.args[2], out delay))
-				{
-					delay = 1;
-				}
-			}
-
-
-			earth.StartCoroutine(AddDebugFlag(count, delay));
-
-			ctx.callback(count + " random debug flag added");
+	private void Debug(Context ctx)
+	{
+		if (!ctx.user.HasRole(UserRole.Streamer))
+		{
+			ctx.callback("That's for XLIII only");
+			return;
+		}
+		PutFlag earth = FindObjectOfType<PutFlag>();
+		if (earth == null)
+		{
+			ctx.callback("No earth, no debug ¯\\_(ツ)_/¯ ");
 			return;
 		}
 
-		string place = string.Join(" ", ctx.args);
-		flag = FlagRepository.GetByUsername(ctx.user.username);
-		
-		AddFlag(ctx.user.username, flag, place, ctx.callback);
+		int count = 1;
+		if (ctx.args.Length > 1)
+		{
+			if (!int.TryParse(ctx.args[1], out count))
+			{
+				count = 1;
+			}
+		}
+
+		float delay = 1;
+		if (ctx.args.Length > 2)
+		{
+			if (!float.TryParse(ctx.args[2], out delay))
+			{
+				delay = 1;
+			}
+		}
+
+		earth.StartCoroutine(AddDebugFlag(count, delay));
+		ctx.callback(count + " random debug flag added");
 	}
 
 	private IEnumerator AddDebugFlag(int count, float delay)
