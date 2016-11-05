@@ -21,6 +21,6 @@ public class XliiiCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return callback => callback(responses[random.Next(responses.Length)]);
+		return ctx => ctx.callback(responses[random.Next(responses.Length)]);
 	}
 }

@@ -3,11 +3,11 @@
 public class CommandsCommand : ChatCommand {
 	public override ZeroArg Default()
 	{
-		return callback =>
+		return ctx =>
 		{
 			string commands = TwitchIRCProcessor.commands.Where(cmd => !cmd.hide())
 			.Aggregate("", (current, cmd) => current + ", " + cmd.command());
-			callback("Available commands: " + commands);
+			ctx.callback("Available commands: " + commands);
 		};
 	}
 

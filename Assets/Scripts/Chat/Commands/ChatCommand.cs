@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 public abstract class ChatCommand : ScriptableObject {
 
-	protected List<CommandClause> clauses = new List<CommandClause>();
+	public List<CommandClause> clauses = new List<CommandClause>();
 
 	//TODO: Replace this with specific error message
 	public bool invalid;
@@ -17,8 +17,7 @@ public abstract class ChatCommand : ScriptableObject {
 
 	public virtual ZeroArg Default()
 	{
-		Debug.Log("Default not implemented for " + command());
-		return callback => callback("DEFAULT CATCH CLAUSE");
+		return ctx => ctx.callback("Bad arguments");
 	}
 
 	public virtual void Clauses() {}
@@ -64,33 +63,36 @@ public abstract class ChatCommand : ScriptableObject {
 		clauses.Add(clause);
 	}
 
-	protected void Clause(string option, string response)
+	protected CommandClause Clause(string option, string response)
 	{
-		Clause(option, c => c(response));
+		return Clause(option, ctx => ctx.callback(response));
 	}
 
-	protected void Clause(string option, ZeroArg response)
+	protected CommandClause Clause(string option, ZeroArg response)
 	{
 		var clause = new CommandClause0(response, option);
 		invalid |= clause.invalid;
 		clauses.Add(clause);
+		return clause;
 	}
 
-	protected void Clause(string option, OneArg response)
+	protected CommandClause Clause(string option, OneArg response)
 	{
 		var clause = new CommandClause1(response, option);
 		invalid |= clause.invalid;
 		clauses.Add(clause);
+		return clause;
 	}
 
-	protected void Clause(string option, TwoArg response)
+	protected CommandClause Clause(string option, TwoArg response)
 	{
 		var clause = new CommandClause2(response, option);
 		invalid |= clause.invalid;
 		clauses.Add(clause);
+		return clause;
 	}
 
-	public delegate void ZeroArg(Action<string> callback);
-	public delegate void OneArg(string arg1, Action<string> callback);
-	public delegate void TwoArg(string arg1, string arg2, Action<string> callback);
+	public delegate void ZeroArg(Context ctx);
+	public delegate void OneArg(string arg1, Context ctx);
+	public delegate void TwoArg(string arg1, string arg2, Context ctx);	
 }

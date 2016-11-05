@@ -8,51 +8,51 @@ public class ScheduledMessageCommand : ChatCommand
 
 	public override void Clauses()
 	{
-		Clause("list", callback =>
+		Clause("list", ctx =>
 		{
 			if (ScheduledCommandProcessor.Commands.Count == 0)
 			{
-				callback("No commands scheduled");
+				ctx.callback("No commands scheduled");
 				return;
 			}
 			string commands = ScheduledCommandProcessor.Commands.Select(c => c.ToString()).Aggregate((cur, next) => cur + ", " + next);
-			callback("Scheduled commands: " + commands);
+			ctx.callback("Scheduled commands: " + commands);
 		});
-		var invalidAdd = "Usage: !scheduled add COMMAND COOLDOWN";
 
-		Clause("add COMMAND COOLDOWN", (command, cd, callback) =>
+		Clause("add COMMAND COOLDOWN", (command, cd, ctx) =>
 		{
 			Debug.Log(command + " " + cd);
 			int cooldown;
 			if (!int.TryParse(cd, out cooldown))
 			{
-				callback("Cooldown should be integer");
+				ctx.callback("Cooldown should be integer");
 				return;
 			}
 
 			if (cooldown < MIN_COOLDOWN)
 			{
-				callback("Cooldown should be at least " + MIN_COOLDOWN);
+				ctx.callback("Cooldown should be at least " + MIN_COOLDOWN);
 				return;
 			}
 
-			callback(ScheduledCommandProcessor.AddCommand(command, cooldown));
+			ctx.callback(ScheduledCommandProcessor.AddCommand(command, cooldown));
 		});
+		var invalidAdd = "Usage: !scheduled add COMMAND COOLDOWN";
 		Clause("add COMMAND", invalidAdd);
 		Clause("add", invalidAdd);
 
-		Clause("clear", c => c(ScheduledCommandProcessor.Clear()));
+		Clause("clear", ctx => ctx.callback(ScheduledCommandProcessor.Clear()));
 		
-		Clause("remove COMMAND", (command, callback) =>
+		Clause("remove COMMAND", (command, ctx) =>
 		{
-			callback(ScheduledCommandProcessor.RemoveCommand(command));
+			ctx.callback(ScheduledCommandProcessor.RemoveCommand(command));
 		});
 		Clause("remove", "Usage: !scheduled remove COMMAND");
 	}
 
 	public override ZeroArg Default()
 	{
-		return c => c("Bad arguments");
+		return ctx => ctx.callback("Bad arguments");
 	}
 
 	public override string command()

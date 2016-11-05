@@ -9,7 +9,7 @@ public class TwitchCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("http://www.twitch.tv/xliii Kappa");
+		return ctx => ctx.callback("http://www.twitch.tv/xliii Kappa");
 	}
 
 	public override bool hide()
@@ -27,7 +27,7 @@ public class TwitterCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("http://www.twitter.com/followxliii");
+		return ctx => ctx.callback("http://www.twitter.com/followxliii");
 	}
 }
 
@@ -40,6 +40,6 @@ public class SoundCloudCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("http://www.soundcloud.com/followxliii");
+		return ctx => ctx.callback("http://www.soundcloud.com/followxliii");
 	}
 }

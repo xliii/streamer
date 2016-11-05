@@ -9,6 +9,6 @@ public class MoreRequestsCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("SMOrc WE NEED MORE REQUESTS! SMOrc");
+		return ctx => ctx.callback("SMOrc WE NEED MORE REQUESTS! SMOrc");
 	}
 }

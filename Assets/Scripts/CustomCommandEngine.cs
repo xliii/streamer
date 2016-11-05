@@ -18,6 +18,8 @@ public class CustomCommandEngine
 	!twitter,
 	!soundcloud,
 	!points
+	!scheduled
+	!give
 
 	- PARTIALLY -
 
@@ -29,8 +31,7 @@ public class CustomCommandEngine
 	- TO DO -
 	
 	!flag
-	!give
-	!scheduled
+	
 	!custom
 
 	-= KEYWORDS =-
@@ -38,11 +39,11 @@ public class CustomCommandEngine
 	- DONE -
 
 	REST -> Rest of the arguments
-
-	- TO DO -
-
 	USER -> calling user name
 	POINTS -> calling user points
-	CUSTOMAPI -> http.get
+
+	- TO DO -
+		
+	HTTP -> http.get (json/xml)
 	*/
 }

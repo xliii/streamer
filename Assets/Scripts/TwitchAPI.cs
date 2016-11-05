@@ -69,7 +69,7 @@ public class TwitchAPI : MonoBehaviour {
 	public static void SetGame(string game, Action<bool> callback)
 	{
 		string body = "{\"channel\":{\"game\":\"" + game + "\"}}";
-		instance.StartCoroutine(instance.PutRequest ("https://api.twitch.tv/kraken/channels/xliii", body,
+		instance.StartCoroutine(instance.PutRequest("https://api.twitch.tv/kraken/channels/xliii", body,
 			success =>
 			{
 				callback(true);

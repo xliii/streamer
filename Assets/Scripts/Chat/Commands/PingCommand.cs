@@ -4,7 +4,7 @@ public class PingCommand : ChatCommand {
 
 	public override ZeroArg Default()
 	{
-		return c => c("pong");
+		return ctx => ctx.callback("pong");
 	}
 
 	public override string command()

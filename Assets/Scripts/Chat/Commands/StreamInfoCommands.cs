@@ -9,17 +9,18 @@ public class SetTitleCommand : ChatCommand
 
 	public override void Clauses()
 	{
-		Clause(Keyword.REST, (title, callback) =>
+		//TODO: With no args, return the current title
+		Clause(Param.REST, (title, ctx) =>
 		{
 			TwitchAPI.SetTitle(title, success =>
 			{
 				if (success)
 				{
-					callback("Title updated");
+					ctx.callback("Title updated");
 				}
 				else
 				{
-					callback("ERROR! Title not updated :(");
+					ctx.callback("ERROR! Title not updated :(");
 				}
 			});
 		});
@@ -27,7 +28,7 @@ public class SetTitleCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("Usage: !title TITLE");
+		return ctx => ctx.callback("Usage: !title TITLE");
 	}
 
 	public override bool hide()
@@ -50,17 +51,18 @@ public class SetGameCommand : ChatCommand
 
 	public override void Clauses()
 	{
-		Clause(Keyword.REST, (title, callback) =>
+		//TODO: With no args, return current game
+		Clause(Param.REST, (title, ctx) =>
 		{
 			TwitchAPI.SetGame(title, success =>
 			{
 				if (success)
 				{
-					callback("Game updated");
+					ctx.callback("Game updated");
 				}
 				else
 				{
-					callback("ERROR! Game not updated :(");
+					ctx.callback("ERROR! Game not updated :(");
 				}
 			});
 		});
@@ -68,7 +70,7 @@ public class SetGameCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return c => c("Usage: !game GAME");
+		return ctx => ctx.callback("Usage: !game GAME");
 	}
 
 	public override bool hide()
@@ -91,7 +93,7 @@ public class UptimeCommand : ChatCommand
 
 	public override ZeroArg Default()
 	{
-		return callback =>
+		return ctx =>
 		{
 			TwitchAPI.Uptime((success, response) =>
 			{
@@ -99,18 +101,18 @@ public class UptimeCommand : ChatCommand
 				{
 					if (response == null)
 					{
-						callback("Stream is currently offline");
+						ctx.callback("Stream is currently offline");
 					}
 					else
 					{
 						DateTime time = DateTime.Parse(response);
 						TimeSpan diff = DateTime.Now.Subtract(time);
-						callback(string.Format("Uptime: {0:00}:{1:00}:{2:00}", diff.Hours, diff.Minutes, diff.Seconds));
+						ctx.callback(string.Format("Uptime: {0:00}:{1:00}:{2:00}", diff.Hours, diff.Minutes, diff.Seconds));
 					}
 				}
 				else
 				{
-					callback("ERROR! Couldn't retrieve uptime :(");
+					ctx.callback("ERROR! Couldn't retrieve uptime :(");
 				}
 			});
 		};

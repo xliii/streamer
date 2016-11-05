@@ -115,8 +115,6 @@ public static class ScheduledCommandProcessor
 		return "Command removed";
 	}
 
-	
-
 	public static string Clear()
 	{
 		int count = Commands.Count;

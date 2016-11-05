@@ -6,8 +6,29 @@ using System.Linq;
 public abstract class CommandClause
 {
 	private string[] option;
+	private string description = "";
 
 	public bool invalid;
+
+	public CommandClause Description(string description)
+	{
+		this.description = description;
+		return this;
+	}
+
+	public string Description()
+	{
+		return description;
+	}
+
+	public string Option()
+	{
+		if (option == null)
+		{
+			return "";
+		}
+		return string.Join(" ", option);
+	}
 
 	protected CommandClause(string option = null)
 	{
@@ -23,7 +44,7 @@ public abstract class CommandClause
 		//Formal arguments validation
 		for (int i = 0; i < args.Length; i++)
 		{
-			if (args[i] == Keyword.REST && i != args.Length - 1)
+			if (args[i] == Param.REST && i != args.Length - 1)
 			{
 				//REST should be the last formal argument
 				invalid = true;
@@ -51,7 +72,7 @@ public abstract class CommandClause
 			var actual = context.args[i];
 			var formal = option[i];
 
-			if (formal == Keyword.REST)
+			if (formal == Param.REST)
 			{
 				//Rest of the actual arguments as one
 				context.resolvedArgs.Add(string.Join(" ", context.args.Skip(i).ToArray()));
@@ -87,7 +108,12 @@ public abstract class CommandClause
 		return true;
 	}
 
-	public abstract void Process(Context context);
+	//This should be ALWAYS called, since we do the callback switching
+	public virtual void Process(Context context)
+	{
+		Action<string> callback = context.callback;
+		context.callback = s => callback(ResolveKeywords(s, context));
+	}
 
 	protected string ResolveKeywords(string response, Context context)
 	{		
@@ -110,8 +136,8 @@ public class CommandClause0 : CommandClause
 
 	public override void Process(Context context)
 	{
-		//TODO: Resolve actual arg keywords
-		response(s => context.callback(ResolveKeywords(s, context)));
+		base.Process(context);
+		response(context);
 	}
 }
 
@@ -126,7 +152,8 @@ public class CommandClause1 : CommandClause
 
 	public override void Process(Context context)
 	{
-		response(context[0], s => context.callback(ResolveKeywords(s, context)));
+		base.Process(context);
+		response(context[0], context);
 	}
 }
 
@@ -141,7 +168,8 @@ public class CommandClause2 : CommandClause
 
 	public override void Process(Context context)
 	{
-		response(context[0], context[1], s => context.callback(ResolveKeywords(s, context)));
+		base.Process(context);
+		response(context[0], context[1], context);
 	}
 }
 

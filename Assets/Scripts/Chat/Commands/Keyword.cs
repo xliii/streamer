@@ -4,13 +4,6 @@ using UnityEngine;
 
 public abstract class Keyword
 {
-	//All the trailing arguments
-	//TODO: properties 
-	// REST(>N) - more than N chars
-	// REST(<N) - less than N chars
-	// REST(-N) - truncate to N chars
-	public static string REST = "{REST}";
-
 	public static string POINTS = "{POINTS}";
 	public static string USER = "{USER}";
 
