@@ -63,7 +63,7 @@ public class UserManager : MonoBehaviour
 
 	public User GetBot()
 	{
-		return UserRepository.GetByUsername(Config.BOT_NAME);
+		return UserRepository.GetByUsername(Config.Get(Config.BOT_NAME));
 	}
 
 	void CheckOnline()

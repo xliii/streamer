@@ -1,76 +1,58 @@
 ﻿using System;
 using System.Linq;
+using UnityEngine;
 
 public class ScheduledMessageCommand : ChatCommand
 {
-
 	private const int MIN_COOLDOWN = 1;
 
-	public override void process(Context ctx)
+	public override void Clauses()
 	{
-		if (ctx.args.Length < 1)
-		{
-			ctx.callback("Wrong arguments :(");
-			return;
-		}
-
-		if (ctx.args[0] == "list")
+		Clause("list", callback =>
 		{
 			if (ScheduledCommandProcessor.Commands.Count == 0)
 			{
-				ctx.callback("No commands scheduled");
+				callback("No commands scheduled");
 				return;
 			}
 			string commands = ScheduledCommandProcessor.Commands.Select(c => c.ToString()).Aggregate((cur, next) => cur + ", " + next);
-			ctx.callback("Scheduled commands: " + commands);
-			return;
-		}
+			callback("Scheduled commands: " + commands);
+		});
+		var invalidAdd = "Usage: !scheduled add COMMAND COOLDOWN";
 
-		if (ctx.args[0] == "add")
+		Clause("add COMMAND COOLDOWN", (command, cd, callback) =>
 		{
-			if (ctx.args.Length < 3)
-			{
-				ctx.callback("Usage: !scheduled add COMMAND COOLDOWN");
-				return;
-			}
-
+			Debug.Log(command + " " + cd);
 			int cooldown;
-			if (!int.TryParse(ctx.args[2], out cooldown))
+			if (!int.TryParse(cd, out cooldown))
 			{
-				ctx.callback("Cooldown should be integer");
+				callback("Cooldown should be integer");
 				return;
 			}
 
 			if (cooldown < MIN_COOLDOWN)
 			{
-				ctx.callback("Cooldown should be at least " + MIN_COOLDOWN);
+				callback("Cooldown should be at least " + MIN_COOLDOWN);
 				return;
 			}
 
-			ctx.callback(ScheduledCommandProcessor.AddCommand(ctx.args[1], cooldown));
-			return;
-		}
+			callback(ScheduledCommandProcessor.AddCommand(command, cooldown));
+		});
+		Clause("add COMMAND", invalidAdd);
+		Clause("add", invalidAdd);
 
-
-		if (ctx.args[0] == "remove")
+		Clause("clear", c => c(ScheduledCommandProcessor.Clear()));
+		
+		Clause("remove COMMAND", (command, callback) =>
 		{
-			if (ctx.args.Length < 2)
-			{
-				ctx.callback("Usage: !scheduled remove COMMAND");
-				return;
-			}
+			callback(ScheduledCommandProcessor.RemoveCommand(command));
+		});
+		Clause("remove", "Usage: !scheduled remove COMMAND");
+	}
 
-			ctx.callback(ScheduledCommandProcessor.RemoveCommand(ctx.args[1]));
-			return;
-		}
-
-		if (ctx.args[0] == "clear")
-		{
-			ctx.callback(ScheduledCommandProcessor.Clear());
-			return;
-		}
-
-		ctx.callback("Unknown argument: " + ctx.args[0]);
+	public override ZeroArg Default()
+	{
+		return c => c("Bad arguments");
 	}
 
 	public override string command()

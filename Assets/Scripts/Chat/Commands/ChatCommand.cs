@@ -64,6 +64,11 @@ public abstract class ChatCommand : ScriptableObject {
 		clauses.Add(clause);
 	}
 
+	protected void Clause(string option, string response)
+	{
+		Clause(option, c => c(response));
+	}
+
 	protected void Clause(string option, ZeroArg response)
 	{
 		var clause = new CommandClause0(response, option);

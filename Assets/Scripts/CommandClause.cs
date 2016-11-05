@@ -58,8 +58,13 @@ public abstract class CommandClause
 				break;
 			}
 
-			//Exact match
-			if (formal.ToLower() == formal && formal != actual) return false;
+			//Command option
+			if (formal.ToLower() == formal)
+			{
+				if (formal != actual) return false;
+				//We don't want to add this one to resolved args
+				continue;
+			}
 
 			bool resolved = false;
 			foreach (Keyword keyword in Keyword.ALL)
@@ -88,7 +93,7 @@ public abstract class CommandClause
 	{		
 		foreach (var keyword in Keyword.ALL)
 		{
-			response = response.Replace(keyword.Name(), keyword.Resolve(context));
+			response = response.Replace(keyword.Name(), keyword.Resolve(context));			
 		}
 		return response;
 	}
@@ -156,6 +161,6 @@ public class Context
 
 	public string this[int i]
 	{
-		get { return args[i]; }
+		get { return resolvedArgs[i]; }
 	}
 }
