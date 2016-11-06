@@ -73,14 +73,14 @@ public class User {
 		AddPoints(PointsMultiplier());
 	}
 
-	public void AddRole(UserRole role)
+	public bool AddRole(UserRole role)
 	{
-		if (role == UserRole.None) return;
+		if (role == UserRole.None) return false;
 
-		if (!HasRole(role))
-		{
-			roles.Add(role);
-		}
+		if (HasRole(role)) return false;
+
+		roles.Add(role);
+		return true;
 	}
 
 	public override string ToString()

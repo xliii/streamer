@@ -58,7 +58,7 @@ public class FlagCommand : ChatCommand
 	{
 		if (!ctx.user.HasRole(UserRole.Streamer))
 		{
-			ctx.callback("That's for XLIII only");
+			ctx.callback("That's for streamer only");
 			return;
 		}
 		PutFlag earth = FindObjectOfType<PutFlag>();

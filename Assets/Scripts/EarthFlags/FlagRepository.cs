@@ -129,6 +129,7 @@ public class Flag
 	public const string FLAG_REMOVED = "flagRemoved";
 	public const string FLAG_UPDATED = "flagUpdated";
 	public const string FLAGS_CLEARED = "flagsCleared";	
+	//TODO: Role update (i.e. Viewer becomes Subscriber)
 
 	public string user;
 	public string place;

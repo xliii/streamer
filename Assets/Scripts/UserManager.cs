@@ -18,6 +18,7 @@ public class UserManager : MonoBehaviour
 
 	void Start()
 	{
+		Subcribers();
 		UpdateOnlineUsers(true);
 		stopWatch.Start();
 	}
@@ -27,6 +28,31 @@ public class UserManager : MonoBehaviour
 	void Update ()
 	{
 		CheckOnline();
+	}
+
+	void Subcribers()
+	{
+		TwitchAPI.CheckSubscription(subs =>
+		{
+			int newSubs = 0;
+			foreach (string username in subs)
+			{
+				User sub = UserRepository.GetByUsername(username);
+				if (sub == null)
+				{
+					sub = Register(username, UserRole.Viewer);
+				}
+				if (sub.AddRole(UserRole.Subscriber))
+				{
+					newSubs++;
+				}
+				UserRepository.Save(sub);
+			}
+			if (newSubs > 0)
+			{
+				Debug.LogFormat("Added {0} new subs", newSubs);
+			}
+		});
 	}
 
 	//TODO: Don't tie online check to launch time

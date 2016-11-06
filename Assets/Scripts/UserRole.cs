@@ -8,6 +8,7 @@ public enum UserRole {
 	Bot,
 	Mod,
 	Staff,
+	Subscriber,
 	Admin,
 	GlobalMod,
 	Viewer,
@@ -18,9 +19,9 @@ public static class UserRoleExtensions
 {
 	public static float PointsMultiplier(this UserRole role)
 	{
-		if (role == UserRole.Viewer) return 1f;
+		if (role == UserRole.Subscriber) return 2f;
 
-		return 2f;
+		return 1f;
 	}
 
 	public static int Priority(this UserRole role)
@@ -39,6 +40,8 @@ public static class UserRoleExtensions
 				return 11;
 			case UserRole.GlobalMod:
 				return 10;
+			case UserRole.Subscriber:
+				return 5;
 			case UserRole.Viewer:
 				return 1;
 			case UserRole.None:
