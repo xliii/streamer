@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public enum UserRole {
 
@@ -17,6 +18,33 @@ public enum UserRole {
 
 public static class UserRoleExtensions
 {
+	private static string[] subAliases = { "sub", "subscriber", "subs" };
+	private static string[] modAliases = { "mod", "mods", "moderator", "op" };
+	private static string[] viewerAliases = { "viewer", "viewers", "pleb", "plebs" };
+	private static string[] streamerAliases = { "streamer", "me"};
+
+	public static UserRole Parse(string role)
+	{
+		if (subAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Subscriber;
+		}
+		if (modAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Mod;
+		}
+		if (viewerAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Viewer;
+		}
+		if (streamerAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Streamer;
+		}
+
+		return UserRole.None;
+	}
+
 	public static float PointsMultiplier(this UserRole role)
 	{
 		if (role == UserRole.Subscriber) return 2f;

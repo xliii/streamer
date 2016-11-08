@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class PutFlag : MonoBehaviour
 {
-	public GameObject redFlag;
-	public GameObject blueFlag;
-	public GameObject greenFlag;
-	//TODO: Sub flag - colors should be customizable
+	public GameObject viewerFlag;
+	public GameObject streamerFlag;
+	public GameObject modFlag;
+	public GameObject subFlag;
 
 	public ParticleSystem flagCreate;
 
@@ -24,9 +24,10 @@ public class PutFlag : MonoBehaviour
 	void Awake()
 	{
 		audioSource = GetComponent<AudioSource>();
-		prefabByRole[UserRole.Viewer] = redFlag;
-		prefabByRole[UserRole.Mod] = greenFlag;
-		prefabByRole[UserRole.Streamer] = blueFlag;
+		prefabByRole[UserRole.Viewer] = viewerFlag;
+		prefabByRole[UserRole.Mod] = modFlag;
+		prefabByRole[UserRole.Streamer] = streamerFlag;
+		prefabByRole[UserRole.Subscriber] = subFlag;
 	}
 
 	void Start()
@@ -167,11 +168,25 @@ public class PutFlag : MonoBehaviour
 		if (!Physics.Raycast(ray, out hit)) return;
 		
 		Quaternion rotation = Quaternion.LookRotation(hit.normal);
-		GameObject flag = Instantiate(redFlag, hit.point, rotation);
+		GameObject flag = Instantiate(viewerFlag, hit.point, rotation);
 		flag.transform.SetParent(transform);
 		flags[new Flag("Manual" + (manualIndex++))] = flag;
 		Particles(hit.point);
 		Sound();
+	}
+
+	public void SetColor(UserRole role, Color color)
+	{
+		Debug.Log("Putting color " + color + " for role " + role);
+		GameObject flag = prefabByRole[role];
+		if (flag == null)
+		{
+			Debug.LogWarning("No flag for role: " + role);
+			return;
+		}
+
+		Renderer r = flag.GetComponentInChildren<SkinnedMeshRenderer>();
+		r.sharedMaterial.color = color;
 	}
 
 	void DebugUV(Vector3 pos)
