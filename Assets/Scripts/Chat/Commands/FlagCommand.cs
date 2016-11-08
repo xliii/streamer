@@ -43,6 +43,11 @@ public class FlagCommand : ChatCommand
 		Clause("remove", Remove);
 		Clause("color ROLE COLOR", (role, colorStr, ctx) =>
 		{
+			if (!ctx.user.HasRole(UserRole.Streamer))
+			{
+				ctx.callback("You have no rights bro");
+				return;
+			}
 			UserRole userRole = UserRoleExtensions.Parse(role);
 			if (userRole == UserRole.None)
 			{
