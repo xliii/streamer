@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Random = System.Random;
 
@@ -132,11 +135,33 @@ public class FlagCommand : ChatCommand
 
 		TwitchAPI.Geolocate(place, (formatted, lat, lng) =>
 		{
-			flag.place = place; //TODO: strip formatting. Meanwhile Unicode characters break JSON serialization
+			flag.place = RegexFix(RemoveDiacritics(formatted));
 			flag.latitude = lat;
 			flag.longitude = lng;
 			FlagRepository.Save(flag);
 			callback(wasNoFlag ? "Flag created at " + flag.place : "Flag set to " + flag.place);
 		});
+	}
+
+	static string RegexFix(string text)
+	{
+		return Regex.Replace(text, @"[^0-9a-zA-Z, \-]+", "");
+	}
+
+	static string RemoveDiacritics(string text)
+	{
+		var normalizedString = text.Normalize(NormalizationForm.FormD);
+		var stringBuilder = new StringBuilder();
+
+		foreach (var c in normalizedString)
+		{
+			var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
+			if (unicodeCategory != UnicodeCategory.NonSpacingMark)
+			{
+				stringBuilder.Append(c);
+			}
+		}
+
+		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
 	}
 }
