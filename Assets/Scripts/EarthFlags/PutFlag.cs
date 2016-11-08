@@ -7,6 +7,7 @@ public class PutFlag : MonoBehaviour
 	public GameObject redFlag;
 	public GameObject blueFlag;
 	public GameObject greenFlag;
+	//TODO: Sub flag - colors should be customizable
 
 	public ParticleSystem flagCreate;
 

@@ -16,10 +16,17 @@ public class SpinFree : MonoBehaviour {
 	[HideInInspector]
 	public float directionChangeSpeed = 2f;
 
+	private DragRotation drag;
+
+	void Start()
+	{
+		drag = GetComponent<DragRotation>();
+	}
+
 	// Update is called once per frame
 	void Update()
 	{
-		if (Input.GetMouseButton(0)) return;
+		if (drag != null && drag.isActiveAndEnabled && Input.GetMouseButton(0)) return;
 
 		if (direction < 1f) {
 			direction += Time.deltaTime / (directionChangeSpeed / 2);
