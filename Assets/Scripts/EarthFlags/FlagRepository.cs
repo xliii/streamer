@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -11,6 +12,17 @@ public class FlagRepository
 		public FlagUsersWrapper(List<string> flagUsers)
 		{
 			this.flagUsers = flagUsers;
+		}
+	}
+
+	
+	private class Flags
+	{
+		public List<Flag> flags;
+
+		public Flags(List<Flag> flags)
+		{
+			this.flags = flags;
 		}
 	}
 
@@ -40,6 +52,23 @@ public class FlagRepository
 		if (FlagUsers.Add(flag.user))
 		{
 			PlayerPrefs.SetString(PREFS_FLAG_USERS, JsonUtility.ToJson(new FlagUsersWrapper(FlagUsers.ToList())));
+		}
+	}
+
+	public static string Export()
+	{
+		var all = GetAll();
+		Debug.Log("Flags: " + all.Count);
+		return JsonUtility.ToJson(new Flags(new List<Flag>(all)));
+	}
+
+	public static void Import(string json)
+	{
+		var imported = JsonUtility.FromJson<Flags>(json);
+		Clear();
+		foreach (var flag in imported.flags)
+		{
+			Save(flag);
 		}
 	}
 
@@ -123,6 +152,7 @@ public class FlagRepository
 	} 
 }
 
+[Serializable]
 public class Flag
 {
 	public const string FLAG_ADDED = "flagAdded";
