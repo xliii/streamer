@@ -11,3 +11,4 @@ Assets/Resources/config.txt*
 *.sln
 *.user
 *.exe
+*.json

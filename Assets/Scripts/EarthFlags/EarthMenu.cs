@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,6 +17,9 @@ public class EarthMenu : MonoBehaviour
 	public PutFlag putFlag;
 	public DragRotation dragRotation;
 
+	public GameObject mainMenu;
+	public GameObject settingsMenu;
+
 	void Start()
 	{
 		versionText.text = "Version " + version;
@@ -23,7 +27,26 @@ public class EarthMenu : MonoBehaviour
 
 	public void OnSettings()
 	{
-		Debug.Log("Settings");
+		settingsMenu.SetActive(true);
+		mainMenu.SetActive(false);
+	}
+
+	public void OnExport()
+	{
+		Debug.Log("Exporting flags");
+		var json = FlagRepository.Export();
+		File.WriteAllText("flags.json", json);
+	}
+
+	public void OnImport()
+	{
+		Debug.Log("TODO: Import");
+	}
+
+	public void OnBack()
+	{
+		settingsMenu.SetActive(false);
+		mainMenu.SetActive(true);
 	}
 
 	public void OnStart()
