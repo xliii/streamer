@@ -8,6 +8,7 @@ public class PutFlag : MonoBehaviour
 	public GameObject streamerFlag;
 	public GameObject modFlag;
 	public GameObject subFlag;
+	public GameObject staffFlag;
 
 	public ParticleSystem flagCreate;
 
@@ -28,6 +29,9 @@ public class PutFlag : MonoBehaviour
 		prefabByRole[UserRole.Mod] = modFlag;
 		prefabByRole[UserRole.Streamer] = streamerFlag;
 		prefabByRole[UserRole.Subscriber] = subFlag;
+		prefabByRole[UserRole.Staff] = staffFlag;
+		prefabByRole[UserRole.Admin] = staffFlag;
+		prefabByRole[UserRole.GlobalMod] = staffFlag;
 	}
 
 	void Start()

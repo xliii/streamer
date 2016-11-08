@@ -21,7 +21,11 @@ public static class UserRoleExtensions
 	private static string[] subAliases = { "sub", "subscriber", "subs" };
 	private static string[] modAliases = { "mod", "mods", "moderator", "op" };
 	private static string[] viewerAliases = { "viewer", "viewers", "pleb", "plebs" };
-	private static string[] streamerAliases = { "streamer", "me"};
+	private static string[] streamerAliases = { "streamer", "me" };
+	private static string[] staffAliases = { "staff" };
+	private static string[] adminAliases = { "admin" };
+	private static string[] globalModAliases = { "globalmod", "globalmoderator", "global" };
+	private static string[] botAliases = { "bot" };
 
 	public static UserRole Parse(string role)
 	{
@@ -40,6 +44,22 @@ public static class UserRoleExtensions
 		if (streamerAliases.Contains(role.ToLower()))
 		{
 			return UserRole.Streamer;
+		}
+		if (staffAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Staff;
+		}
+		if (adminAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Admin;
+		}
+		if (globalModAliases.Contains(role.ToLower()))
+		{
+			return UserRole.GlobalMod;
+		}
+		if (botAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Bot;
 		}
 
 		return UserRole.None;
