@@ -57,7 +57,7 @@ public class FlagRepository
 
 	public static string Export()
 	{
-		return JsonUtility.ToJson(new Flags(new List<Flag>(GetAll())));
+		return JsonUtility.ToJson(new Flags(new List<Flag>(GetAll())), true);
 	}
 
 	public static void Import(string json)
