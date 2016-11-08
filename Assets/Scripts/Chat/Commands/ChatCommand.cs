@@ -28,6 +28,12 @@ public abstract class ChatCommand : ScriptableObject {
 		{
 			if (!clause.Matches(context)) continue;
 
+			if (!clause.AllowedFor(context.user))
+			{
+				context.callback("You have no rights to do this ;(");
+				return;
+			}
+
 			clause.Process(context);
 			return;
 		}

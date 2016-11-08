@@ -38,16 +38,11 @@ public class FlagCommand : ChatCommand
 			var count = FlagRepository.GetAll().Count;
 			ctx.callback(count == 0 ? "No flags :(" : (count == 1) ? "1 flag total" : count + " flags total");
 		});
-		Clause("debug", Debug);
+		Clause("debug", Debug).Roles(UserRole.Streamer);
 		Clause("delete", Remove);
 		Clause("remove", Remove);
 		Clause("color ROLE COLOR", (role, color, ctx) =>
 		{
-			if (!ctx.user.HasRole(UserRole.Streamer))
-			{
-				ctx.callback("You have no rights bro");
-				return;
-			}
 			UserRole userRole = UserRoleExtensions.Parse(role);
 			if (userRole == UserRole.None)
 			{
@@ -64,7 +59,7 @@ public class FlagCommand : ChatCommand
 
 			earth.SetFlagColor(userRole, color, true);
 			ctx.callback("Color updated");
-		});
+		}).Roles(UserRole.Admin);
 		Clause(Param.REST, (place, ctx) =>
 		{
 			var flag = FlagRepository.GetByUsername(ctx.user.username);
@@ -80,11 +75,6 @@ public class FlagCommand : ChatCommand
 
 	private void Debug(Context ctx)
 	{
-		if (!ctx.user.HasRole(UserRole.Streamer))
-		{
-			ctx.callback("That's for streamer only");
-			return;
-		}
 		PutFlag earth = FindObjectOfType<PutFlag>();
 		if (earth == null)
 		{

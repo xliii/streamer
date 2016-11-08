@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using System;
 using System.Linq;
 
@@ -10,11 +9,25 @@ public abstract class CommandClause
 
 	public bool invalid;
 
-	//TODO: role support as with description
+	private UserRole[] roles;
+
+	public CommandClause Roles(params UserRole[] roles)
+	{
+		this.roles = roles;
+		return this;
+	}
+
 	public CommandClause Description(string description)
 	{
 		this.description = description;
 		return this;
+	}
+
+	public bool AllowedFor(User user)
+	{
+		if (roles == null || roles.Length == 0) return true;
+
+		return user.HasAnyRole(roles);
 	}
 
 	public string Description()
