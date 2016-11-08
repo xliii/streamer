@@ -1,9 +1,14 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class PutFlag : MonoBehaviour
 {
+	private static string PREFS_FLAG_COLOR = "PREFS_FLAG_COLOR_{0}";
+
 	public GameObject viewerFlag;
 	public GameObject streamerFlag;
 	public GameObject modFlag;
@@ -32,7 +37,21 @@ public class PutFlag : MonoBehaviour
 		prefabByRole[UserRole.Staff] = staffFlag;
 		prefabByRole[UserRole.Admin] = staffFlag;
 		prefabByRole[UserRole.GlobalMod] = staffFlag;
+
+		LoadFlagColor(UserRole.Viewer);
+		LoadFlagColor(UserRole.Mod);
+		LoadFlagColor(UserRole.Staff);
+		LoadFlagColor(UserRole.Streamer);
+		LoadFlagColor(UserRole.Subscriber);
 	}
+
+	void LoadFlagColor(UserRole role)
+	{
+		string clr = PlayerPrefs.GetString(string.Format(PREFS_FLAG_COLOR, role), null);		
+		if (string.IsNullOrEmpty(clr)) return;
+
+		SetFlagColor(role, clr);
+	}	
 
 	void Start()
 	{
@@ -179,9 +198,13 @@ public class PutFlag : MonoBehaviour
 		Sound();
 	}
 
-	public void SetColor(UserRole role, Color color)
+	public void SetFlagColor(UserRole role, string color, bool save = false)
 	{
-		Debug.Log("Putting color " + color + " for role " + role);
+		if (save)
+		{
+			PlayerPrefs.SetString(string.Format(PREFS_FLAG_COLOR, role), color);
+			PlayerPrefs.Save();
+		}
 		GameObject flag = prefabByRole[role];
 		if (flag == null)
 		{
@@ -190,7 +213,30 @@ public class PutFlag : MonoBehaviour
 		}
 
 		Renderer r = flag.GetComponentInChildren<SkinnedMeshRenderer>();
-		r.sharedMaterial.color = color;
+		try
+		{
+			r.sharedMaterial.color = hexToColor(color);
+		}
+		catch (Exception e)
+		{
+			Debug.LogError("Error while setting flag color: " + color + " -> " + e.Message);
+		}
+	}
+
+	private Color hexToColor(string hex)
+	{
+		hex = hex.Replace("0x", "");//in case the string is formatted 0xFFFFFF
+		hex = hex.Replace("#", "");//in case the string is formatted #FFFFFF
+		byte a = 255;//assume fully visible unless specified in hex
+		byte r = Byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
+		byte g = Byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
+		byte b = Byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+		//Only use alpha if the string has enough characters
+		if (hex.Length == 8)
+		{
+			a = Byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
+		}
+		return new Color32(r, g, b, a);
 	}
 
 	void DebugUV(Vector3 pos)
