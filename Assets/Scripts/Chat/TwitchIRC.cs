@@ -18,7 +18,7 @@ public class TwitchIRC : MonoBehaviour
 	private System.Threading.Thread inProc, outProc;
 	private void StartIRC()
 	{
-		channelName = Config.Get(Config.IRC_CHANNEL);
+		channelName = Config.Get(Config.STREAMER_NAME);
 		System.Net.Sockets.TcpClient sock = new System.Net.Sockets.TcpClient();
 		sock.Connect(server, port);
 		if (!sock.Connected)

@@ -5,10 +5,10 @@ obj/
 Temp/
 UnityVS.*
 .vs/
-Assets/Resources/config.txt*
 *.csproj
 *.userprefs
 *.sln
 *.user
 *.exe
 *.json
+config.txt

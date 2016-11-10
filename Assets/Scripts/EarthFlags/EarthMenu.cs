@@ -20,11 +20,19 @@ public class EarthMenu : MonoBehaviour
 	public GameObject mainMenu;
 	public GameObject settingsMenu;
 
+	public GameObject badConfigLabel;
+
 	public Image pauseButton;
 
 	void Start()
 	{
 		versionText.text = "Version " + version;
+		if (!Config.Init())
+		{
+			mainMenu.SetActive(false);
+			settingsMenu.SetActive(false);
+			badConfigLabel.SetActive(true);
+		}
 	}
 
 	public void OnSettings()
