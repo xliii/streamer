@@ -33,14 +33,16 @@ public class EarthMenu : MonoBehaviour
 
 	public void OnExport()
 	{
-		Debug.Log("Exporting flags");
 		var json = FlagRepository.Export();
 		File.WriteAllText("flags.json", json);
+		Debug.Log("Flags exported");
 	}
 
 	public void OnImport()
 	{
-		Debug.Log("TODO: Import");
+		var json = File.ReadAllText("flags.json");
+		FlagRepository.Import(json);
+		Debug.Log("Flags imported");
 	}
 
 	public void OnBack()

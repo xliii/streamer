@@ -35,7 +35,7 @@ public class FlagCommand : ChatCommand
 		{
 			int deleted = FlagRepository.Clear();
 			ctx.callback(deleted == 0 ? "There were no flags" : deleted == 1 ? "1 flag deleted" : deleted + " flags deleted");
-		});
+		}).Roles(UserRole.Streamer);
 		Clause("count", ctx =>
 		{
 			var count = FlagRepository.GetAll().Count;
