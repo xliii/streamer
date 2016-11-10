@@ -1,4 +1,4 @@
 twitch.streamer=
 twitch.bot=
-twitch.irc.oauth=
 twitch.api.access_token=
+twitch.irc.oauth=

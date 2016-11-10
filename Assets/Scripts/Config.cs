@@ -33,6 +33,16 @@ public static class Config
 			}
 			var value = property[1].Trim().ToLower();
 			if (value == "") return false;
+
+			//Foolproof checks
+			if (property[0] == API_ACCESS_TOKEN)
+			{
+				value = value.Replace("oauth:", "");
+			}
+			if (property[0] == IRC_OAUTH && !value.StartsWith("oauth:"))
+			{
+				value = "oauth:" + value;
+			}
 			
 			properties[property[0]] = value;
 		}
