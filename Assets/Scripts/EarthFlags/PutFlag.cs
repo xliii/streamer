@@ -200,9 +200,21 @@ public class PutFlag : MonoBehaviour
 
 	public void SetFlagColor(UserRole role, string color, bool save = false)
 	{
+		Color resolvedColor;
+		try
+		{
+			resolvedColor = Colors.HexToColor(color);
+		}
+		catch (Exception e)
+		{
+			resolvedColor = Colors.GetByName(color);
+		}
+		
+		Debug.Log("Resolved color: " + Colors.ColorToHex(resolvedColor));
+
 		if (save)
 		{
-			PlayerPrefs.SetString(string.Format(PREFS_FLAG_COLOR, role), color);
+			PlayerPrefs.SetString(string.Format(PREFS_FLAG_COLOR, role), Colors.ColorToHex(resolvedColor));
 			PlayerPrefs.Save();
 		}
 		GameObject flag = prefabByRole[role];
@@ -213,30 +225,7 @@ public class PutFlag : MonoBehaviour
 		}
 
 		Renderer r = flag.GetComponentInChildren<SkinnedMeshRenderer>();
-		try
-		{
-			r.sharedMaterial.color = hexToColor(color);
-		}
-		catch (Exception e)
-		{
-			Debug.LogError("Error while setting flag color: " + color + " -> " + e.Message);
-		}
-	}
-
-	private Color hexToColor(string hex)
-	{
-		hex = hex.Replace("0x", "");//in case the string is formatted 0xFFFFFF
-		hex = hex.Replace("#", "");//in case the string is formatted #FFFFFF
-		byte a = 255;//assume fully visible unless specified in hex
-		byte r = Byte.Parse(hex.Substring(0, 2), System.Globalization.NumberStyles.HexNumber);
-		byte g = Byte.Parse(hex.Substring(2, 2), System.Globalization.NumberStyles.HexNumber);
-		byte b = Byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-		//Only use alpha if the string has enough characters
-		if (hex.Length == 8)
-		{
-			a = Byte.Parse(hex.Substring(4, 2), System.Globalization.NumberStyles.HexNumber);
-		}
-		return new Color32(r, g, b, a);
+		r.sharedMaterial.color = resolvedColor;
 	}
 
 	void DebugUV(Vector3 pos)

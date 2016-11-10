@@ -1,10 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using Random = System.Random;
 
@@ -44,7 +39,7 @@ public class FlagCommand : ChatCommand
 		Clause("debug", Debug).Roles(UserRole.Streamer);
 		Clause("delete", Remove);
 		Clause("remove", Remove);
-		Clause("color ROLE COLOR", (role, color, ctx) =>
+		Clause("color ROLE " + Param.REST, (role, color, ctx) =>
 		{
 			UserRole userRole = UserRoleExtensions.Parse(role);
 			if (userRole == UserRole.None)
@@ -62,7 +57,7 @@ public class FlagCommand : ChatCommand
 
 			earth.SetFlagColor(userRole, color, true);
 			ctx.callback("Color updated");
-		}).Roles(UserRole.Admin);
+		}).Roles(UserRole.Streamer);
 		Clause(Param.REST, (place, ctx) =>
 		{
 			var flag = FlagRepository.GetByUsername(ctx.user.username);
@@ -135,33 +130,11 @@ public class FlagCommand : ChatCommand
 
 		TwitchAPI.Geolocate(place, (formatted, lat, lng) =>
 		{
-			flag.place = RegexFix(RemoveDiacritics(formatted));
+			flag.place = LanguageUtils.RegexFix(LanguageUtils.RemoveDiacritics(formatted));
 			flag.latitude = lat;
 			flag.longitude = lng;
 			FlagRepository.Save(flag);
 			callback(wasNoFlag ? "Flag created at " + flag.place : "Flag set to " + flag.place);
 		});
-	}
-
-	static string RegexFix(string text)
-	{
-		return Regex.Replace(text, @"[^0-9a-zA-Z, \-]+", "");
-	}
-
-	static string RemoveDiacritics(string text)
-	{
-		var normalizedString = text.Normalize(NormalizationForm.FormD);
-		var stringBuilder = new StringBuilder();
-
-		foreach (var c in normalizedString)
-		{
-			var unicodeCategory = CharUnicodeInfo.GetUnicodeCategory(c);
-			if (unicodeCategory != UnicodeCategory.NonSpacingMark)
-			{
-				stringBuilder.Append(c);
-			}
-		}
-
-		return stringBuilder.ToString().Normalize(NormalizationForm.FormC);
 	}
 }
