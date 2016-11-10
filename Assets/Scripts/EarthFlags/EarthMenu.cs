@@ -20,6 +20,8 @@ public class EarthMenu : MonoBehaviour
 	public GameObject mainMenu;
 	public GameObject settingsMenu;
 
+	public Image pauseButton;
+
 	void Start()
 	{
 		versionText.text = "Version " + version;
@@ -53,25 +55,34 @@ public class EarthMenu : MonoBehaviour
 
 	public void OnStart()
 	{
-		Debug.Log("Start");
-		//dope animation
-		StartCoroutine(FadeAnimation());
-		scrollZoom.enabled = true;
-		putFlag.enabled = true;
-		dragRotation.enabled = true;
+		StartCoroutine(FadeAnimation(false));
 	}
 
-	private IEnumerator FadeAnimation()
+	public void OnPause()
 	{
+		StartCoroutine(FadeAnimation(true));
+	}
+
+	private IEnumerator FadeAnimation(bool on)
+	{
+		scrollZoom.enabled = !on;
+		putFlag.enabled = !on;
+		dragRotation.enabled = !on;
+		startButton.gameObject.SetActive(true);
+		settingsButton.gameObject.SetActive(true);
+		pauseButton.gameObject.SetActive(true);
 		Text startText = startButton.GetComponentInChildren<Text>();
 		Text settingsText = settingsButton.GetComponentInChildren<Text>();
 		for (float alpha = 1; alpha > 0; alpha -= Time.deltaTime * 2)
 		{
-			startText.color = new Color(1, 1, 1, alpha);
-			settingsText.color = new Color(1, 1, 1, alpha);
+			float a = on ? 1 - alpha : alpha;
+			startText.color = new Color(1, 1, 1, a);
+			settingsText.color = new Color(1, 1, 1, a);
+			pauseButton.color = new Color(1, 1, 1, 1 - a);
 			yield return null;
 		}
-		startButton.gameObject.SetActive(false);
-		settingsButton.gameObject.SetActive(false);
+		startButton.gameObject.SetActive(on);
+		settingsButton.gameObject.SetActive(on);
+		pauseButton.gameObject.SetActive(!on);
 	} 
 }
