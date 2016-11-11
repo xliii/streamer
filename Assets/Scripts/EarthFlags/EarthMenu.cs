@@ -12,13 +12,14 @@ public class EarthMenu : MonoBehaviour
 	public Text versionText;
 	public Button startButton;
 	public Button settingsButton;
+	public Button quitButton;
 
 	public ScrollZoom scrollZoom;
 	public PutFlag putFlag;
 	public DragRotation dragRotation;
 
 	public GameObject mainMenu;
-	public GameObject settingsMenu;
+	public GameObject settingsMenu;	
 
 	public GameObject badConfigLabel;
 
@@ -33,6 +34,11 @@ public class EarthMenu : MonoBehaviour
 			settingsMenu.SetActive(false);
 			badConfigLabel.SetActive(true);
 		}
+	}
+
+	public void OnQuit()
+	{
+		Application.Quit();
 	}
 
 	public void OnSettings()
@@ -79,18 +85,22 @@ public class EarthMenu : MonoBehaviour
 		startButton.gameObject.SetActive(true);
 		settingsButton.gameObject.SetActive(true);
 		pauseButton.gameObject.SetActive(true);
+		quitButton.gameObject.SetActive(true);
 		Text startText = startButton.GetComponentInChildren<Text>();
 		Text settingsText = settingsButton.GetComponentInChildren<Text>();
+		Text quitText = quitButton.GetComponentInChildren<Text>();
 		for (float alpha = 1; alpha > 0; alpha -= Time.deltaTime * 2)
 		{
 			float a = on ? 1 - alpha : alpha;
 			startText.color = new Color(1, 1, 1, a);
 			settingsText.color = new Color(1, 1, 1, a);
+			quitText.color = new Color(1, 1, 1, a);
 			pauseButton.color = new Color(1, 1, 1, 1 - a);
 			yield return null;
 		}
 		startButton.gameObject.SetActive(on);
 		settingsButton.gameObject.SetActive(on);
+		quitButton.gameObject.SetActive(on);
 		pauseButton.gameObject.SetActive(!on);
 	} 
 }

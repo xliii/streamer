@@ -14,7 +14,7 @@ public class Colors : MonoBehaviour {
 
 	public void Awake()
 	{
-		config = JsonUtility.FromJson<ColorConfigs>(LanguageUtils.RemoveDiacritics(colorsJson));
+		config = JsonUtility.FromJson<ColorConfigs>(LanguageUtils.RemoveDiacritics(colorsJson.ToLower()));
 		foreach (var cfg in config.colors)
 		{
 			dict[cfg.label] = cfg;
@@ -23,6 +23,7 @@ public class Colors : MonoBehaviour {
 
 	public static Color GetByName(string name)
 	{
+		name = name.ToLower();
 		if (dict.ContainsKey(name))
 		{
 			ColorConfig exact = dict[name];
