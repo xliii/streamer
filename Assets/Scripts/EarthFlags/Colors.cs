@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.Globalization;
+using System.Linq;
 
 public class Colors : MonoBehaviour {
 
@@ -14,11 +15,23 @@ public class Colors : MonoBehaviour {
 
 	public void Awake()
 	{
-		config = JsonUtility.FromJson<ColorConfigs>(LanguageUtils.RemoveDiacritics(colorsJson.ToLower()));
+		config = JsonUtility.FromJson<ColorConfigs>(LanguageUtils.RemoveDiacritics(colorsJson));
 		foreach (var cfg in config.colors)
 		{
+			cfg.label = PreprocessColorName(cfg.label);
 			dict[cfg.label] = cfg;
 		}
+	}
+
+	private static string PreprocessColorName(string color)
+	{
+		return color.ToLower().Replace("web", "")
+			.Replace("(","").Replace(")", "")
+			.Replace("ryb", "").Replace("traditional", "")
+			.Replace("ncs", "").Replace("metallic", "")
+			.Replace("html/css", "").Replace("color wheel", "")
+			.Replace("x11", "").Replace("munsell", "")
+			.Trim();
 	}
 
 	public static Color GetByName(string name)
@@ -32,8 +45,17 @@ public class Colors : MonoBehaviour {
 		}
 
 		int min = int.MaxValue;
-		ColorConfig match = config.colors[0];
-		foreach (ColorConfig cfg in config.colors)
+		
+
+		//Check contains group first
+		List<ColorConfig> candidates = config.colors.Where(cfg => cfg.label.Contains(name)).ToList();
+		if (candidates.Count == 0)
+		{
+			candidates = config.colors;
+		}
+
+		ColorConfig match = candidates[0];
+		foreach (ColorConfig cfg in candidates)
 		{
 			int distance = LanguageUtils.Levenshtein(name, cfg.label);
 			if (distance < min)
