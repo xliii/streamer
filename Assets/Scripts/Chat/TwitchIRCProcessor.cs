@@ -5,7 +5,9 @@ using System.Linq;
 
 [RequireComponent(typeof(TwitchIRC))]
 [RequireComponent(typeof(TwitchAPI))]
-public class TwitchIRCProcessor : MonoBehaviour {
+public class TwitchIRCProcessor : MonoBehaviour
+{
+	public string[] allowedCommands;
 
 	TwitchIRC irc;
 
@@ -70,10 +72,6 @@ public class TwitchIRCProcessor : MonoBehaviour {
 
 	private void Add(Type t)
 	{
-		if (t == typeof (CustomCommand))
-		{
-			Debug.Log("Adding custom command");
-		}
 		ChatCommand command = ScriptableObject.CreateInstance(t) as ChatCommand;
 		if (command == null)
 		{
@@ -84,6 +82,12 @@ public class TwitchIRCProcessor : MonoBehaviour {
 		if (command.invalid)
 		{
 			Debug.LogError("Command " + command.command() + " is invalid");
+			return;
+		}
+
+		if (allowedCommands.Length > 0 && !allowedCommands.Contains(command.command()))
+		{
+			Debug.LogWarning("Command not allowed in this configuration: " + command.command());
 			return;
 		}
 
