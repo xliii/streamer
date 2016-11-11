@@ -176,13 +176,6 @@ public class PutFlag : MonoBehaviour
 		return transform.rotation * new Vector3(x, y, z) * 20;
 	}
 
-	void Update () {
-		if (Input.GetMouseButtonDown(1))
-		{
-			PutFlagManual();
-		}
-	}
-
 	void PutFlagManual()
 	{
 		Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

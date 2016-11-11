@@ -63,6 +63,7 @@ public class FlagCommand : ChatCommand
 			var flag = FlagRepository.GetByUsername(ctx.user.username);
 			AddFlag(ctx.user.username, flag, place, ctx.callback);
 		});
+		//TODO: import/export
 	}	
 
 	private void Remove(Context ctx)
