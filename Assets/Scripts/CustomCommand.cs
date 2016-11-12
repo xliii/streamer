@@ -13,7 +13,6 @@ public class CustomCommand : ChatCommand
 
 	public override void process(Context context)
 	{
-
 		context.callback("DO LITERALLY NOTHING");
 	}
 

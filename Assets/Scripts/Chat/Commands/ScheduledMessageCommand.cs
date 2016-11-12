@@ -6,6 +6,11 @@ public class ScheduledMessageCommand : ChatCommand
 {
 	private const int MIN_COOLDOWN = 1;
 
+	public override UserRole[] roles()
+	{
+		return new UserRole[] { UserRole.Streamer };
+	}
+
 	public override void Clauses()
 	{
 		Clause("list", ctx =>

@@ -32,6 +32,11 @@ public class ManageCustomCommand : ChatCommand {
 		return "!custom";
 	}
 
+	public override UserRole[] roles()
+	{
+		return new UserRole[] { UserRole.Streamer };
+	}
+
 	public override void process(Context ctx)
 	{
 		if (ctx.args.Length < 1)

@@ -21,7 +21,7 @@
 			}
 
 			ctx.callback(target.username + " has " + target.Points + " points");
-		});
+		}).Roles(UserRole.Streamer, UserRole.Mod);
 	}
 
 	public override string command()

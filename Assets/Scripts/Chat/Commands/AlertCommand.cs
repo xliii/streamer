@@ -8,6 +8,11 @@ public class AlertCommand : ChatCommand {
 		return "!alert";
 	}
 
+	public override UserRole[] roles()
+	{
+		return new UserRole[] {UserRole.Streamer};
+	}
+
 	public override void Clauses()
 	{
 		Clause("test donation", ctx =>
