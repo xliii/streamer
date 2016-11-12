@@ -3,6 +3,8 @@ using System.Collections.Generic;
 
 public class TwitchIRC : MonoBehaviour
 {
+	public bool useStreamer = false;
+
 	private string channelName;
 	private string server = "irc.twitch.tv";
 	private int port = 6667;
@@ -31,8 +33,8 @@ public class TwitchIRC : MonoBehaviour
 		var output = new System.IO.StreamWriter(networkStream);
 
 		//Send PASS & NICK.
-		output.WriteLine("PASS " + Config.Get(Config.IRC_OAUTH));
-		output.WriteLine("NICK " + Config.Get(Config.BOT_NAME).ToLower());
+		output.WriteLine("PASS oauth:" + Config.Get(useStreamer ? Config.STREAMER_TOKEN : Config.BOT_TOKEN));
+		output.WriteLine("NICK " + Config.Get(useStreamer ? Config.STREAMER_NAME : Config.BOT_NAME).ToLower());
 		output.Flush();
 
 		//output proc
@@ -52,7 +54,7 @@ public class TwitchIRC : MonoBehaviour
 			buffer = input.ReadLine();
 
 			//was message?
-			if (buffer.Contains("PRIVMSG #"))
+			if (buffer.Contains("PRIVMSG "))
 			{
 				lock (recievedMsgs)
 				{

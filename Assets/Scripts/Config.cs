@@ -6,11 +6,9 @@ public static class Config
 {
 	public const string STREAMER_NAME = "twitch.streamer";
 	public const string BOT_NAME = "twitch.bot";
-	//public const string IRC_CHANNEL = "twitch.irc.channel";
-	public const string IRC_OAUTH = "twitch.irc.oauth";
-	public const string API_CLIENT_ID = "twitch.api.client_id";
-	//public const string API_CLIENT_SECRET = "twitch.api.client_secret";
-	public const string API_ACCESS_TOKEN = "twitch.api.access_token";
+	public const string API_CLIENT_ID = "twitch.clientid";
+	public const string STREAMER_TOKEN = "twitch.streamer.token";
+	public const string BOT_TOKEN = "twitch.bot.token";
 
 	private static Dictionary<string, string> properties;
 
@@ -35,14 +33,7 @@ public static class Config
 			if (value == "") return false;
 
 			//Foolproof checks
-			if (property[0] == API_ACCESS_TOKEN)
-			{
-				value = value.Replace("oauth:", "");
-			}
-			if (property[0] == IRC_OAUTH && !value.StartsWith("oauth:"))
-			{
-				value = "oauth:" + value;
-			}
+			value = value.Replace("oauth:", "");
 			
 			properties[property[0]] = value;
 		}
