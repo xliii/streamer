@@ -18,9 +18,13 @@ public class HostManager : MonoBehaviour {
 			if (m.Success)
 			{
 				string host = m.Groups[2].Value;
-				string viewers = m.Groups[3].Value;
-				Debug.Log("Host: " + host + " -> " + viewers);
-				//TODO: Actual host alert
+				int viewers;
+				if (!int.TryParse(m.Groups[3].Value, out viewers))
+				{
+					Debug.LogError("Couldn't parse host viewer amount");
+					return;
+				}
+				Messenger.Broadcast(TwitchAlertsType.host_alert.ToString(), HostAlertData.Create(host, viewers));
 			}
 		});
 	}

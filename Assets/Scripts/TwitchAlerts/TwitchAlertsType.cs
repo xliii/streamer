@@ -45,4 +45,7 @@
 	//DeepBot
 	YoutubeCurrentSong,
 	YoutubeCurrentSongRequestedBy,
+
+	//Alerts not parsed from file
+	host_alert,
 }

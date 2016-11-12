@@ -10,6 +10,8 @@ public class AlertManager : MonoBehaviour
 
 	public DonationAlert[] donationsAlerts;
 
+	public HostAlert[] hostAlerts;
+
 	public static bool alertInProgress;	
 
 	// Use this for initialization
@@ -21,6 +23,13 @@ public class AlertManager : MonoBehaviour
 	void Start () {
 		Messenger.AddListener<AlertData, bool>(TwitchAlertsType.most_recent_follower.ToString(), OnFollowerAlert);
 		Messenger.AddListener<AlertData, bool>(TwitchAlertsType.most_recent_donator.ToString(), OnDonationAlert);
+		Messenger.AddListener<AlertData>(TwitchAlertsType.host_alert.ToString(), OnHostAlert);
+	}
+
+	void OnHostAlert(AlertData data)
+	{
+		Debug.Log("Host Alert: " + data.username + " | " + ((HostAlertData) data).viewers);
+		queue.Enqueue(data);
 	}
 
 	void OnDonationAlert(AlertData data, bool init)
@@ -74,6 +83,8 @@ public class AlertManager : MonoBehaviour
 				return GetDonationAlertProcessor(donationData.amount);
 			case TwitchAlertsType.most_recent_follower:
 				return GetFollowerAlertProcessor();
+			case TwitchAlertsType.host_alert:
+				return GetHostAlertProcessor();
 			default:
 				return null;
 		}
@@ -94,5 +105,10 @@ public class AlertManager : MonoBehaviour
 		}
 
 		return candidates[Random.Range(0, candidates.Length)];
+	}
+
+	HostAlert GetHostAlertProcessor()
+	{
+		return hostAlerts[Random.Range(0, hostAlerts.Length)];
 	}
 }

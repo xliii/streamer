@@ -53,3 +53,18 @@ public class DonationAlertData : AlertData
 		get { return string.Format("€{0:F}", amount); }
 	}
 }
+
+public class HostAlertData : AlertData
+{
+	public int viewers;
+
+	public static AlertData Create(string username, int viewers)
+	{
+		return new HostAlertData()
+		{
+			type = TwitchAlertsType.host_alert,
+			username = username,
+			viewers = viewers
+		};
+	}
+}
