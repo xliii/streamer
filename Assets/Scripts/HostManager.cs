@@ -1,6 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using UnityEngine;
 
+[RequireComponent(typeof(TwitchIRC))]
 public class HostManager : MonoBehaviour {
 
 	private TwitchIRC irc;
