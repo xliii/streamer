@@ -95,6 +95,26 @@ public class TwitchAPI : MonoBehaviour {
 			}));
 	}
 
+	public static void GetFollows(Action<List<string>> callback)
+	{
+		instance.StartCoroutine(instance.GetRequest("https://api.twitch.tv/kraken/channels/" + Config.Get(Config.STREAMER_NAME) + "/follows",
+			success =>
+			{
+				List<string> followers = new List<string>();
+				var root = JSON.Parse(success);
+				var follows = root["follows"].AsArray;
+				foreach (JSONNode follow in follows)
+				{
+					followers.Add(follow["user"]["display_name"]);
+				}
+				callback(followers);
+			},
+			error =>
+			{
+				Debug.LogError("Couldn't retrieve followers: " + error);
+			}));
+	}
+
 	public static void GetViewers(Action<Dictionary<string, UserRole>> callback)
 	{
 		instance.StartCoroutine(instance.GetRequest("https://tmi.twitch.tv/group/user/" + Config.Get(Config.STREAMER_NAME) + "/chatters",

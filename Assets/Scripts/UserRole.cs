@@ -10,6 +10,7 @@ public enum UserRole {
 	Subscriber,
 	Admin,
 	GlobalMod,
+	Follower,
 	Viewer,
 	None
 }
@@ -18,7 +19,8 @@ public static class UserRoleExtensions
 {
 	private static string[] subAliases = { "sub", "subscriber", "subs" };
 	private static string[] modAliases = { "mod", "mods", "moderator", "op" };
-	private static string[] viewerAliases = { "viewer", "viewers", "pleb", "plebs" };
+	private static string[] followerAliases = {"follower", "follow", "pleb", "plebs" };
+	private static string[] viewerAliases = { "viewer", "viewers", "notevenpleb", "notevenplebs"};
 	private static string[] streamerAliases = { "streamer", "me" };
 	private static string[] staffAliases = { "staff" };
 	private static string[] adminAliases = { "admin" };
@@ -59,6 +61,10 @@ public static class UserRoleExtensions
 		{
 			return UserRole.Bot;
 		}
+		if (followerAliases.Contains(role.ToLower()))
+		{
+			return UserRole.Follower;
+		}
 
 		return UserRole.None;
 	}
@@ -88,6 +94,8 @@ public static class UserRoleExtensions
 				return 10;
 			case UserRole.Subscriber:
 				return 5;
+			case UserRole.Follower:
+				return 2;
 			case UserRole.Viewer:
 				return 1;
 			case UserRole.None:

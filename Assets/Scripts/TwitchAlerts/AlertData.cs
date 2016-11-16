@@ -7,6 +7,8 @@ public class AlertData
 	public TwitchAlertsType type;
 	public string username;
 
+	protected AlertData() {}
+
 	public static AlertData Parse(TwitchAlertsType type, string data)
 	{
 		switch (type)
@@ -40,6 +42,18 @@ public class AlertData
 				Debug.LogError("Cannot parse AlertData: " + type + " | " + data);
 				return null;
 		}
+	}
+}
+
+public class FollowAlertData : AlertData
+{
+	public static AlertData Create(string username)
+	{
+		return new FollowAlertData()
+		{
+			type = TwitchAlertsType.most_recent_follower,
+			username = username
+		};
 	}
 }
 
