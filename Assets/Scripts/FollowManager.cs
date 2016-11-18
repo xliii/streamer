@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FollowManager : MonoBehaviour {
 
-	const int FOLLOW_UPDATE_RATE = 5000; //30 seconds
+	const int FOLLOW_UPDATE_RATE = 30000; //30 seconds
 
 	System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 

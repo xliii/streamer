@@ -87,7 +87,7 @@ public class TwitchIRCProcessor : MonoBehaviour
 
 		if (allowedCommands.Length > 0 && !allowedCommands.Contains(command.command()))
 		{
-			Debug.LogWarning("Command not allowed in this configuration: " + command.command());
+			//Debug.LogWarning("Command not allowed in this configuration: " + command.command());
 			return;
 		}
 
