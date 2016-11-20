@@ -61,6 +61,19 @@ public class DonationAlertData : AlertData
 {
 	public float amount;
 	public string message;
+	public int timestamp;
+
+	public static AlertData Create(string username, float amount, string message, int timestamp = 0)
+	{
+		return new DonationAlertData()
+		{
+			type = TwitchAlertsType.most_recent_donator,
+			username = username,
+			amount = amount,
+			message = message,
+			timestamp = timestamp
+		};
+	}
 
 	public string amountFormatted
 	{

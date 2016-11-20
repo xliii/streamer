@@ -34,7 +34,7 @@ public class NetworkListener : MonoBehaviour
 
 	void Update()
 	{
-		if (events.Count > 0)
+		while (events.Count > 0)
 		{
 			string e = events.Dequeue();
 			Debug.Log("Broadcasting: " + e);

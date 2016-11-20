@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -11,14 +10,18 @@ public class WebServer : MonoBehaviour
 	private readonly HttpListener _listener = new HttpListener();
 
 	private string baseUrl = "http://127.0.0.1:3000";
-	private const string streamLabs = "/streamlabs";
-	private const string twitchApiBot = "/twitch-api-bot";
-	private const string twitchApiStreamer = "/twitch-api-streamer";
+	private const string STREAM_LABS = "/streamlabs";	
+	private const string TWITCH_API_BOT = "/twitch-api-bot";
+	private const string TWITCH_API_STREAMER = "/twitch-api-streamer";
 
 	private const string twitchApiBotURL = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=9r82dk02lbj7cdk5ln8fkxzqnzvt4ic&redirect_uri=http://127.0.0.1:3000/twitch-api-bot&scope=chat_login";
-	private const string twitchApiStreamerURL = "";
+	private const string twitchApiStreamerURL = "https://api.twitch.tv/kraken/oauth2/authorize?response_type=token&client_id=dbkw8my5en45onuij6p05is8g76zlxj&redirect_uri=http://127.0.0.1:3000/twitch-api-streamer&scope=user_read%20channel_editor%20channel_subscriptions%20channel_check_subscription%20chat_login";
+	private const string streamLabsURL = "http://streamlabs.com/api/v1.0/authorize?client_id=iFQ71QQzZIfl4s9TTx2pFW27YBOSOARZgve6g7Sc&redirect_uri=http://127.0.0.1:3000/streamlabs&response_type=code&scope=donations.read+donations.create";
 
+	//TODO: Infinite redirect issue
 	private string redirect = "<html><head><title></title></head><body><script>window.location=\"http://127.0.0.1:3000/{0}?\"+document.location.hash.substring(1)</script></body></html>";
+
+	private static Queue<KeyValuePair<string, string>> events = new Queue<KeyValuePair<string, string>>();
 
 	public void Start()
 	{
@@ -29,11 +32,25 @@ public class WebServer : MonoBehaviour
 
 		// URI prefixes are required, for example 
 		// "http://localhost:8080/index/".
-		_listener.Prefixes.Add(Url(streamLabs));
-		_listener.Prefixes.Add(Url(twitchApiBot));
-		_listener.Prefixes.Add(Url(twitchApiStreamer));
+		_listener.Prefixes.Add(Url(STREAM_LABS));
+		_listener.Prefixes.Add(Url(TWITCH_API_BOT));
+		_listener.Prefixes.Add(Url(TWITCH_API_STREAMER));
 		_listener.Start();
 		Run();
+	}
+
+	public void Update()
+	{
+		while (events.Count > 0)
+		{
+			var e = events.Dequeue();
+			Messenger.Broadcast(e.Key, e.Value);
+		}
+	}
+
+	private void Enqueue(string key, string value)
+	{
+		events.Enqueue(new KeyValuePair<string, string>(key, value));
 	}
 
 	private string Url(string path)
@@ -47,39 +64,39 @@ public class WebServer : MonoBehaviour
 		var path = request.Url.AbsolutePath;
 		switch (path)
 		{
-			case streamLabs:
+			case STREAM_LABS:
 			{
 				string code = request.QueryString.Get("code");
 				if (string.IsNullOrEmpty(code))
 				{
 					return "Error: no \"code\" param found";
 				}
-				
-				Debug.Log("Code: " + code);
+
+				Enqueue(Events.STREAM_LABS_CODE, code);
 				return "StreamLabs callback processed!";
 			}
-			case twitchApiBot:
+			case TWITCH_API_BOT:
 			{
 				string token = request.QueryString.Get("access_token");
 				if (string.IsNullOrEmpty(token))
 				{
-					return RedirectUrl(twitchApiBot);
-					//return "Error: no \"access_token\" param found";
+					return RedirectUrl(TWITCH_API_BOT);
 				}
-				Debug.Log("Bot token: " + token);
+				
+				Enqueue(Events.TWITCH_API_BOT_TOKEN, token);
 				return "Successfully authenticated with bot!";
 			}
-			case twitchApiStreamer:
+			case TWITCH_API_STREAMER:
 			{
-					string token = request.QueryString.Get("access_token");
-					if (string.IsNullOrEmpty(token))
-					{
-						return RedirectUrl(twitchApiStreamer);
-						//return "Error: no \"access_token\" param found";
-					}
-					Debug.Log("Streamer token: " + token);
-					return "Successfully authenticated with streamer!";
+				string token = request.QueryString.Get("access_token");
+				if (string.IsNullOrEmpty(token))
+				{
+					return RedirectUrl(TWITCH_API_STREAMER);
 				}
+
+				Enqueue(Events.TWITCH_API_STREAMER_TOKEN, token);
+				return "Successfully authenticated with streamer!";
+			}
 			default:
 			{
 				Debug.LogWarning("Don't know how to process: " + path);
@@ -122,7 +139,7 @@ public class WebServer : MonoBehaviour
 						catch (Exception e)
 						{
 							Debug.LogError("Error: " + e.Message);
-						} // suppress any exceptions
+						}
 						finally
 						{
 							// always close the stream
@@ -133,8 +150,10 @@ public class WebServer : MonoBehaviour
 			}
 			catch (Exception e)
 			{
+				if (e.Message == "Listener was closed.") return;
+
 				Debug.LogError("Error: " + e.Message);
-			} // suppress any exceptions
+			}
 		});
 	}
 
