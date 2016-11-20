@@ -61,9 +61,9 @@ public class DonationAlertData : AlertData
 {
 	public float amount;
 	public string message;
-	public int timestamp;
+	public int id;
 
-	public static AlertData Create(string username, float amount, string message, int timestamp = 0)
+	public static AlertData Create(string username, float amount, string message, int id = 0)
 	{
 		return new DonationAlertData()
 		{
@@ -71,7 +71,7 @@ public class DonationAlertData : AlertData
 			username = username,
 			amount = amount,
 			message = message,
-			timestamp = timestamp
+			id = id
 		};
 	}
 

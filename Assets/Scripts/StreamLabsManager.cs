@@ -9,48 +9,43 @@ public class StreamLabsManager : MonoBehaviour {
 	private string ACCESS_TOKEN;
 	private string REFRESH_TOKEN;
 
+	public static int LIMIT = 5;
+	public static string CURRENCY = "EUR";
+
 	private const string TOKEN_URL = "https://www.twitchalerts.com/api/v1.0/token";
 	private const string USER_URL = "https://www.twitchalerts.com/api/v1.0/user?access_token={0}";
-	private const string DONATIONS_URL = "https://www.twitchalerts.com/api/v1.0/donations?access_token={0}&limit={1}&currency={2}";
+	private const string DONATIONS_URL = "https://www.twitchalerts.com/api/v1.0/donations?access_token={0}&currency={1}&limit={2}&after={3}";
 
-	private int latestTimestamp = 0;
-
-	void Awake()
-	{
-		//latestTimestamp = TimeUtils.UnixTimestamp();
-	}
+	private int latestDonationId = 0;
 
 	// Use this for initialization
 	void Start () {
 		Messenger.AddListener<string>(Events.STREAM_LABS_CODE, code =>
 		{
-			Debug.Log("Received code: " + code);
 			StartCoroutine(FetchToken(code));
 		});
 	}
 
 	private void TokenRetrieved(string accessToken, string refreshToken)
 	{
+		Debug.Log("Authorized with StreamLabs");
 		ACCESS_TOKEN = accessToken;
 		REFRESH_TOKEN = refreshToken;
-		Debug.Log("Access: " + accessToken);
-		Debug.Log("Refresh: " + refreshToken);
-		StartCoroutine(FetchDonations("EUR", 5));
+		//Load latest donation ID
+		StartCoroutine(FetchDonations(1, true));
 	}
 
-	private void DonationsRetrieved(List<DonationAlertData> donations)
+	private void DonationsRetrieved(List<DonationAlertData> donations, bool ignore)
 	{
-		int maxTimestamp = 0;
 		foreach (var donation in donations)
 		{
-			if (donation.timestamp < latestTimestamp) continue;
-
-			maxTimestamp = Mathf.Max(maxTimestamp, donation.timestamp);
-			Debug.Log("Donation: " + donation.username + " -> " + donation.amountFormatted);
-			Messenger.Broadcast(TwitchAlertsType.most_recent_donator.ToString(), donation);
+			latestDonationId = Mathf.Max(donation.id, latestDonationId);
+			if (!ignore)
+			{
+				Debug.Log("Donation: " + donation.username + " -> " + donation.amountFormatted);
+				Messenger.Broadcast(TwitchAlertsType.most_recent_donator.ToString(), donation);
+			}
 		}
-
-		latestTimestamp = Mathf.Max(latestTimestamp, maxTimestamp);
 	}
 
 	IEnumerator FetchToken(string code)
@@ -76,9 +71,9 @@ public class StreamLabsManager : MonoBehaviour {
 		}
 	}
 
-	IEnumerator FetchDonations(string currency, int limit)
+	IEnumerator FetchDonations(int limit, bool ignore = false)
 	{
-		using (UnityWebRequest www = UnityWebRequest.Get(string.Format(DONATIONS_URL, ACCESS_TOKEN, limit, currency)))
+		using (UnityWebRequest www = UnityWebRequest.Get(string.Format(DONATIONS_URL, ACCESS_TOKEN, CURRENCY, limit, latestDonationId)))
 		{
 			yield return www.Send();
 
@@ -92,9 +87,9 @@ public class StreamLabsManager : MonoBehaviour {
 				var root = JSON.Parse(www.downloadHandler.text);
 				foreach (JSONNode donation in root["data"].AsArray)
 				{
-					donations.Add(DonationAlertData.Create(donation["name"], donation["amount"].AsFloat, donation["message"], donation["created_at"].AsInt) as DonationAlertData);
+					donations.Add(DonationAlertData.Create(donation["name"], donation["amount"].AsFloat, donation["message"], donation["donation_id"].AsInt) as DonationAlertData);
 				}
-				DonationsRetrieved(donations);
+				DonationsRetrieved(donations, ignore);
 			}
 		}
 	}
