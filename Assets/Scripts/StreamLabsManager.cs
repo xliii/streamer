@@ -10,6 +10,8 @@ public class StreamLabsManager : MonoBehaviour {
 	private string REFRESH_TOKEN;
 	private int EXPIRES_IN;
 
+	private const string PREFS_REFRESH = "stream-labs-refresh-token";
+
 	public static int LIMIT = 5;
 	public static string CURRENCY = "EUR";
 
@@ -24,7 +26,15 @@ public class StreamLabsManager : MonoBehaviour {
 	private int latestDonationId = 0;
 
 	// Use this for initialization
-	void Start () {
+	void Start ()
+	{
+		REFRESH_TOKEN = PlayerPrefs.GetString(PREFS_REFRESH, "");
+		if (!string.IsNullOrEmpty(REFRESH_TOKEN))
+		{
+			StartCoroutine(RefreshToken(true));
+			return;
+		}
+
 		Messenger.AddListener<string>(Events.STREAM_LABS_CODE, code =>
 		{
 			StartCoroutine(FetchToken(code));
@@ -45,7 +55,7 @@ public class StreamLabsManager : MonoBehaviour {
 	{
 		if (EXPIRES_IN <= TimeUtils.UnixTimestamp())
 		{
-			yield return RefreshToken();
+			yield return RefreshToken(false);
 		}
 
 		Debug.Log("Polling for donations");
@@ -56,8 +66,11 @@ public class StreamLabsManager : MonoBehaviour {
 	{
 		Debug.Log(initial ? "Authorized with StreamLabs" : "StreamLabs token refreshed");
 		ACCESS_TOKEN = accessToken;
-		REFRESH_TOKEN = refreshToken;
 		EXPIRES_IN = TimeUtils.UnixTimestamp() + 3600; //1 hour
+
+		REFRESH_TOKEN = refreshToken;
+		PlayerPrefs.SetString(PREFS_REFRESH, REFRESH_TOKEN);
+		PlayerPrefs.Save();
 
 		if (!initial) return;
 
@@ -79,7 +92,7 @@ public class StreamLabsManager : MonoBehaviour {
 		}
 	}
 
-	IEnumerator RefreshToken()
+	IEnumerator RefreshToken(bool initial)
 	{
 		var url = TOKEN_URL;
 		WWWForm form = new WWWForm();
@@ -100,7 +113,7 @@ public class StreamLabsManager : MonoBehaviour {
 			{
 				Debug.Log(url + " POST -> " + www.downloadHandler.text);
 				var root = JSON.Parse(www.downloadHandler.text);
-				TokenRetrieved(root["access_token"], root["refresh_token"], false);
+				TokenRetrieved(root["access_token"], root["refresh_token"], initial);
 			}
 		}
 	}
