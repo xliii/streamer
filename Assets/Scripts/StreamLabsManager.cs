@@ -25,7 +25,7 @@ public class StreamLabsManager : MonoBehaviour {
 
 	private int latestDonationId = 0;
 
-	// Use this for initialization
+	//TODO: StreamLabs ids are not actually strictly increasing, handle that mb?
 	void Start ()
 	{
 		REFRESH_TOKEN = PlayerPrefs.GetString(PREFS_REFRESH, "");

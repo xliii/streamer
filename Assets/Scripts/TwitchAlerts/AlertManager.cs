@@ -22,7 +22,7 @@ public class AlertManager : MonoBehaviour
 
 	void Start () {
 		Messenger.AddListener<AlertData, bool>(TwitchAlertsType.most_recent_follower.ToString(), OnFollowerAlert);
-		Messenger.AddListener<AlertData, bool>(TwitchAlertsType.most_recent_donator.ToString(), OnDonationAlert);
+		Messenger.AddListener<DonationAlertData>(TwitchAlertsType.most_recent_donator.ToString(), OnDonationAlert);
 		Messenger.AddListener<AlertData>(TwitchAlertsType.host_alert.ToString(), OnHostAlert);
 	}
 
@@ -32,15 +32,9 @@ public class AlertManager : MonoBehaviour
 		queue.Enqueue(data);
 	}
 
-	void OnDonationAlert(AlertData data, bool init)
+	void OnDonationAlert(DonationAlertData data)
 	{
-		if (init)
-		{
-			//SetLayoutText(data);
-			return;
-		}
-		Debug.Log("Donation Alert: " + data.username + " | " + ((DonationAlertData) data).amountFormatted);
-
+		Debug.Log("Donation Alert: " + data.username + " | " + data.amountFormatted);
 		queue.Enqueue(data);
 	}
 
