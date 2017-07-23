@@ -122,6 +122,11 @@ public class TwitchAPI : MonoBehaviour {
 			{
 				Dictionary<string, UserRole> dict = new Dictionary<string, UserRole>();
 				var root = JSON.Parse(success);
+				if (root["chatter_count"].AsInt == 0)
+				{
+					callback(dict);
+					return;
+				}
 				var chatters = root["chatters"];
 				foreach (JSONNode mod in chatters["moderators"].AsArray)
 				{
@@ -203,7 +208,7 @@ public class TwitchAPI : MonoBehaviour {
 			//www.SetRequestHeader("Content-Type", "application/json");
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " GET -> " + www.error);
 				onError(www.error);
@@ -226,7 +231,7 @@ public class TwitchAPI : MonoBehaviour {
 			www.SetRequestHeader("Content-Type", "application/json");
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " PUT -> " + www.error);
 				onError(www.error);

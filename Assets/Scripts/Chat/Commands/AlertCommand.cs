@@ -1,8 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class AlertCommand : ChatCommand {
+public class AlertCommand : ChatCommand
+{
 	public override string command()
 	{
 		return "!alert";
@@ -55,16 +55,14 @@ public class AlertCommand : ChatCommand {
 	private void FakeDonation()
 	{
 		int money = 2 * Random.Range(1, 70);
-		string amount = "($" + money + ".00)";
-		string message = TestUser() + " " + amount + TextFromFile.DELIMETER + RandomDonationMessage();
-		TextFromFile.WriteOnce(TwitchAlertsType.most_recent_donator, message);
+		var donation = DonationAlertData.Create(TestUser(), money, RandomDonationMessage());
+		Messenger.Broadcast(TwitchAlertsType.most_recent_donator.ToString(), donation);
 	}
 
 	private void FakeFollow()
 	{
-		int followers = int.Parse(TextFromFile.ReadOnce(TwitchAlertsType.session_follower_count));
-		TextFromFile.WriteOnce(TwitchAlertsType.most_recent_follower, TestUser());
-		TextFromFile.WriteOnce(TwitchAlertsType.session_follower_count, (followers + 1).ToString());
+		//TODO: inc total follows
+		Messenger.Broadcast(TwitchAlertsType.most_recent_follower.ToString(), FollowAlertData.Create(TestUser()), false);
 	}
 
 	private string TestUser()

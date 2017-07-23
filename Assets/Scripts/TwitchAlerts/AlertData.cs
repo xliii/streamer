@@ -7,41 +7,8 @@ public class AlertData
 	public TwitchAlertsType type;
 	public string username;
 
-	protected AlertData() {}
-
-	public static AlertData Parse(TwitchAlertsType type, string data)
+	protected AlertData()
 	{
-		switch (type)
-		{
-			case TwitchAlertsType.most_recent_donator:
-				string[] entries = data.Split(new[] { TextFromFile.DELIMETER }, StringSplitOptions.None);
-				string[] left = entries[0].Split('(');
-
-				string amountStr = new string(left[1].Where(c => char.IsDigit(c) || c == '.').ToArray());
-				float amount;
-				if (!float.TryParse(amountStr, out amount))
-				{
-					amount = 0;
-					Debug.LogError("Could not parse amount: " + amountStr);
-				}
-
-				return new DonationAlertData()
-				{
-					type = TwitchAlertsType.most_recent_donator,
-					username = left[0].Trim(),
-					amount = amount,
-					message = entries[1]
-				};
-			case TwitchAlertsType.most_recent_follower:
-				return new AlertData()
-				{
-					type = TwitchAlertsType.most_recent_follower,
-					username = data.Trim()
-				};
-			default:
-				Debug.LogError("Cannot parse AlertData: " + type + " | " + data);
-				return null;
-		}
 	}
 }
 
@@ -63,7 +30,7 @@ public class DonationAlertData : AlertData
 	public string message;
 	public int id;
 
-	public static AlertData Create(string username, float amount, string message, int id = 0)
+	public static DonationAlertData Create(string username, float amount, string message, int id = 0)
 	{
 		return new DonationAlertData()
 		{

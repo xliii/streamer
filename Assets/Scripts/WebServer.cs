@@ -60,7 +60,7 @@ public class WebServer : MonoBehaviour
 
 	public string Process(HttpListenerRequest request)
 	{
-		//Debug.Log("Processing request: " + request.Url);
+		Debug.Log("Processing request: " + request.Url);
 		var path = request.Url.AbsolutePath;
 		switch (path)
 		{
@@ -119,9 +119,10 @@ public class WebServer : MonoBehaviour
 
 	public void Run()
 	{
-		ThreadPool.QueueUserWorkItem((o) =>
+		Debug.Log("Starting webserver...");
+		ThreadPool.QueueUserWorkItem(o =>
 		{
-			Console.WriteLine("Webserver running...");
+			Debug.Log("Webserver running...");
 			try
 			{
 				while (_listener.IsListening)

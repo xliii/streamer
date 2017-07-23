@@ -11,7 +11,7 @@ public class FollowerAlert : Alert
 	protected override void Start()
 	{
 		base.Start();
-		followers = int.Parse(TextFromFile.ReadOnce(TwitchAlertsType.session_follower_count));
+		followers = 0; //TODO: Poll followers from Twitch API
 		if (followerCount)
 		{
 			followerCount.text = followers.ToString();

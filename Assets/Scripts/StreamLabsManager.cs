@@ -15,15 +15,22 @@ public class StreamLabsManager : MonoBehaviour {
 	public static int LIMIT = 5;
 	public static string CURRENCY = "EUR";
 
-	private const string TOKEN_URL = "https://www.twitchalerts.com/api/v1.0/token";
+	private const string SCOPE = "donations.read";
+
+	private const string TOKEN_URL = "https://streamlabs.com/api/v1.0/token";
 	private const string USER_URL = "https://www.twitchalerts.com/api/v1.0/user?access_token={0}";
+	private const string INITIAL_DONATIONS_URL = "https://www.twitchalerts.com/api/v1.0/donations?access_token={0}&currency={1}&limit=1";
 	private const string DONATIONS_URL = "https://www.twitchalerts.com/api/v1.0/donations?access_token={0}&currency={1}&limit={2}&after={3}";
+	private const string AUTHORIZE_URL = "https://streamlabs.com/api/v1.0/authorize?response_type=code&client_id={0}&redirect_uri={1}&scope={2}";
 
 	private const int UPDATE_RATE = 10000; //60 seconds
 
 	System.Diagnostics.Stopwatch stopWatch = new System.Diagnostics.Stopwatch();
 
 	private int latestDonationId = 0;
+	private string CLIENT_ID = "iFQ71QQzZIfl4s9TTx2pFW27YBOSOARZgve6g7Sc";
+	private string CLIENT_SECRET = "4lGIGViZbvdx5z1or4eLAUkvworjJliJJjzP88qx";
+	private string REDIRECT_URI = "http://127.0.0.1:3000/streamlabs";
 
 	//TODO: StreamLabs ids are not actually strictly increasing, handle that mb?
 	void Start ()
@@ -39,6 +46,8 @@ public class StreamLabsManager : MonoBehaviour {
 		{
 			StartCoroutine(FetchToken(code));
 		});
+
+		//TODO: Open browser for StreamLabs authorization
 	}
 
 	void Update()
@@ -59,7 +68,7 @@ public class StreamLabsManager : MonoBehaviour {
 		}
 
 		Debug.Log("Polling for donations");
-		yield return FetchDonations(5);
+		yield return FetchDonations();
 	}
 
 	private void TokenRetrieved(string accessToken, string refreshToken, bool initial)
@@ -75,7 +84,7 @@ public class StreamLabsManager : MonoBehaviour {
 		if (!initial) return;
 
 		//Load latest donation ID
-		StartCoroutine(FetchDonations(1, true));
+		StartCoroutine(FetchDonations(true));
 		stopWatch.Start();
 	}
 
@@ -84,6 +93,7 @@ public class StreamLabsManager : MonoBehaviour {
 		foreach (var donation in donations)
 		{
 			latestDonationId = Mathf.Max(donation.id, latestDonationId);
+			Debug.Log("Latest donation by " + donation.username);
 			if (!ignore)
 			{
 				Debug.Log("Donation: " + donation.username + " -> " + donation.amountFormatted);
@@ -92,20 +102,40 @@ public class StreamLabsManager : MonoBehaviour {
 		}
 	}
 
+	IEnumerator Authorize()
+	{
+		Debug.Log("Authorize");
+		var url = string.Format(AUTHORIZE_URL, CLIENT_ID, REDIRECT_URI, SCOPE);
+		using (UnityWebRequest www = UnityWebRequest.Get(url))
+		{
+			yield return www.Send();
+
+			if (www.isNetworkError)
+			{
+				Debug.LogError(url + " GET -> " + www.error);
+			}
+			else
+			{
+				Debug.Log(url + " GET -> " + www.downloadHandler.text);
+			}
+		}
+	}
+
 	IEnumerator RefreshToken(bool initial)
 	{
+		Debug.Log("Refresh token");
 		var url = TOKEN_URL;
 		WWWForm form = new WWWForm();
 		form.AddField("grant_type", "refresh_token");
-		form.AddField("client_id", "iFQ71QQzZIfl4s9TTx2pFW27YBOSOARZgve6g7Sc");
-		form.AddField("client_secret", "4lGIGViZbvdx5z1or4eLAUkvworjJliJJjzP88qx"); //TODO: Hide
-		form.AddField("redirect_uri", "http://127.0.0.1:3000/streamlabs");
+		form.AddField("client_id", CLIENT_ID);
+		form.AddField("client_secret", CLIENT_SECRET); //TODO: Hide
+		form.AddField("redirect_uri", REDIRECT_URI);
 		form.AddField("refresh_token", REFRESH_TOKEN);
 		using (UnityWebRequest www = UnityWebRequest.Post(url, form))
 		{
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " POST -> " + www.error);
 			}
@@ -123,15 +153,15 @@ public class StreamLabsManager : MonoBehaviour {
 		var url = TOKEN_URL;
 		WWWForm form = new WWWForm();
 		form.AddField("grant_type", "authorization_code");
-		form.AddField("client_id", "iFQ71QQzZIfl4s9TTx2pFW27YBOSOARZgve6g7Sc");
-		form.AddField("client_secret", "4lGIGViZbvdx5z1or4eLAUkvworjJliJJjzP88qx"); //TODO: Hide
-		form.AddField("redirect_uri", "http://127.0.0.1:3000/streamlabs");
+		form.AddField("client_id", CLIENT_ID);
+		form.AddField("client_secret", CLIENT_SECRET); //TODO: Hide
+		form.AddField("redirect_uri", REDIRECT_URI);
 		form.AddField("code", code);
 		using (UnityWebRequest www = UnityWebRequest.Post(url, form))
 		{
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " POST -> " + www.error);
 			} else
@@ -143,14 +173,22 @@ public class StreamLabsManager : MonoBehaviour {
 		}
 	}
 
-	IEnumerator FetchDonations(int limit, bool ignore = false)
+	IEnumerator FetchDonations(bool initial = false)
 	{
-		var url = string.Format(DONATIONS_URL, ACCESS_TOKEN, CURRENCY, limit, latestDonationId);
+		string url;
+		if (initial)
+		{
+			url = string.Format(INITIAL_DONATIONS_URL, ACCESS_TOKEN, CURRENCY);
+		}
+		else
+		{
+			url = string.Format(DONATIONS_URL, ACCESS_TOKEN, CURRENCY, LIMIT, latestDonationId);
+		}
 		using (UnityWebRequest www = UnityWebRequest.Get(url))
 		{
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " GET -> " + www.error);
 			}
@@ -163,7 +201,7 @@ public class StreamLabsManager : MonoBehaviour {
 				{
 					donations.Add(DonationAlertData.Create(donation["name"], donation["amount"].AsFloat, donation["message"], donation["donation_id"].AsInt) as DonationAlertData);
 				}
-				DonationsRetrieved(donations, ignore);
+				DonationsRetrieved(donations, initial);
 			}
 		}
 	}
@@ -175,7 +213,7 @@ public class StreamLabsManager : MonoBehaviour {
 		{
 			yield return www.Send();
 
-			if (www.isError)
+			if (www.isNetworkError)
 			{
 				Debug.LogError(url + " GET -> " + www.error);
 			}

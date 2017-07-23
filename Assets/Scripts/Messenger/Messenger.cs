@@ -290,6 +290,7 @@ static internal class Messenger
 				callback(arg1);
 			}
 			else {
+				Debug.Log("Broadcast failed: " + eventType + " -> " + arg1.GetType());
 				throw CreateBroadcastSignatureException(eventType);
 			}
 		}
